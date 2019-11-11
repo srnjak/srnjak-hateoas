@@ -86,11 +86,20 @@ public class HalObject {
             return this;
         }
 
-        public Builder addLinks(String rel, HalLink... halLinks) {
-            HalLinkEntry halLinkEntry = Arrays.stream(halLinks)
-                    .collect(HalLinkEntry.collector(rel));
-
+        public HalObject.Builder addLinks(HalLinkEntry halLinkEntry) {
             this.halLinkEntrySet.add(halLinkEntry);
+            return this;
+        }
+
+        public HalObject.Builder addLinks(String rel, List<HalLink> halLinks) {
+            HalLinkEntry halLinkEntry = halLinks.stream()
+                    .collect(HalLinkEntry.collector(rel));
+            this.addLinks(halLinkEntry);
+            return this;
+        }
+
+        public Builder addLinks(String rel, HalLink... halLinks) {
+            this.addLinks(rel, Arrays.asList(halLinks));
             return this;
         }
 

@@ -2,9 +2,7 @@ package com.srnjak.hateoas.hal;
 
 import com.srnjak.hateoas.utils.JsonBuilderUtils;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import javax.json.*;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,11 +29,21 @@ public final class HalLinks {
     }
 
     static void addEntryToJson(JsonObjectBuilder builder, HalLinkEntry entry) {
-        JsonObject jsonObject = Optional.ofNullable(entry.getHalLink())
-                .map(HalLink::toJsonObject)
-                .get();
+        Optional<JsonObject> jsonObjectOptional =
+                Optional.ofNullable(entry.getHalLink())
+                        .map(HalLink::toJsonObject);
 
-        builder.add(entry.getRel(), jsonObject);
+        jsonObjectOptional.ifPresentOrElse(
+                o -> builder.add(entry.getRel(), o),
+                () -> {
+                    JsonArrayBuilder jsonArrayBuilder = entry.getHalLinkList()
+                            .stream()
+                            .map(HalLink::toJsonObject)
+                            .map(Json::createObjectBuilder)
+                            .collect(JsonBuilderUtils.collector());
+
+                    builder.add(entry.getRel(), jsonArrayBuilder);
+                });
     }
 
     static void addEntry(Builder builder, HalLinkEntry halLinkEntry) {

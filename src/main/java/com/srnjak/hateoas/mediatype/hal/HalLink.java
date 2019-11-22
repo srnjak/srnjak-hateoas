@@ -1,4 +1,4 @@
-package com.srnjak.hateoas.hal;
+package com.srnjak.hateoas.mediatype.hal;
 
 import lombok.Builder;
 import lombok.Value;

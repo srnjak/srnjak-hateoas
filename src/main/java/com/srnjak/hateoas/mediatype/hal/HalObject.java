@@ -1,29 +1,19 @@
-package com.srnjak.hateoas.hal;
+package com.srnjak.hateoas.mediatype.hal;
 
+import lombok.NonNull;
 import lombok.Value;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.bind.JsonbBuilder;
-import javax.ws.rs.core.Link;
-import javax.ws.rs.core.MediaType;
 import java.io.StringReader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Value
 public class HalObject {
 
     public static class Builder {
-
-        static HalLink toHalLink(Link link) {
-            return HalLink.builder()
-                    .href(link.getUri().toString())
-                    .title(link.getTitle())
-                    .type(link.getType())
-                    .build();
-        }
 
         JsonObject jsonObject;
         HalEmbedded embedded;
@@ -45,37 +35,7 @@ public class HalObject {
             this.jsonObject = jsonObject;
         }
 
-        public Builder addLink(Link link) {
-
-            HalLink halLink = toHalLink(link);
-
-            HalLinkEntry halLinkEntry =
-                    HalLinkEntry.builder()
-                            .rel(link.getRel())
-                            .addLink(halLink)
-                            .buildSingle();
-
-            this.halLinkEntrySet.add(halLinkEntry);
-            return this;
-        }
-
-        public Builder addLinks(Link... links) {
-
-            Map<String, List<Link>> linksPerRel = Arrays.stream(links)
-                    .collect(Collectors.groupingBy(Link::getRel));
-
-            linksPerRel.keySet().forEach(r -> {
-                HalLinkEntry halLinkEntry = linksPerRel.get(r).stream()
-                        .map(Builder::toHalLink)
-                        .collect(HalLinkEntry.collector(r));
-
-                this.halLinkEntrySet.add(halLinkEntry);
-            });
-
-            return this;
-        }
-
-        public Builder addLink(String rel, HalLink halLink) {
+        public Builder addLink(@NonNull String rel, @NonNull HalLink halLink) {
             HalLinkEntry halLinkEntry =
                     HalLinkEntry.builder()
                             .rel(rel)
@@ -87,29 +47,46 @@ public class HalObject {
         }
 
         public HalObject.Builder addLinks(HalLinkEntry halLinkEntry) {
-            this.halLinkEntrySet.add(halLinkEntry);
+            Optional.ofNullable(halLinkEntry)
+                    .ifPresent(l -> this.halLinkEntrySet.add(l));
             return this;
         }
 
-        public HalObject.Builder addLinks(String rel, List<HalLink> halLinks) {
+        public HalObject.Builder addLinks(
+                @NonNull String rel,
+                @NonNull List<HalLink> halLinks) {
+
             HalLinkEntry halLinkEntry = halLinks.stream()
                     .collect(HalLinkEntry.collector(rel));
             this.addLinks(halLinkEntry);
             return this;
         }
 
-        public Builder addLinks(String rel, HalLink... halLinks) {
+        public Builder addLinks(
+                @NonNull String rel,
+                @NonNull HalLink... halLinks) {
+
             this.addLinks(rel, Arrays.asList(halLinks));
             return this;
         }
 
+        public Builder addLinks(@NonNull List<HalLinkEntry> halLinkEntryList) {
+            halLinkEntryList.forEach(h -> this.addLinks(h));
+            return this;
+        }
+
         public Builder addCurie(HalCurie halCurie) {
-            this.halCurieSet.add(halCurie);
+            Optional.ofNullable(halCurie)
+                    .ifPresent(c -> this.halCurieSet.add(c));
             return this;
         }
 
         public Builder addCuries(HalCuries halCuries) {
-            this.halCurieSet.addAll(halCuries.getHalCurieSet());
+
+            Optional.ofNullable(halCuries)
+                    .map(c -> c.getHalCurieSet())
+                    .ifPresent(c -> this.halCurieSet.addAll(c));
+
             return this;
         }
 
@@ -163,10 +140,8 @@ public class HalObject {
 
         JsonObjectBuilder jsonObjectBuilder =
                 Optional.ofNullable(this.jsonObject)
-                        .map(o -> {
-                            return Json.createObjectBuilder(o)
-                                    .addAll(Json.createObjectBuilder(o));
-                        })
+                        .map(o -> Json.createObjectBuilder(o)
+                                .addAll(Json.createObjectBuilder(o)))
                         .orElseGet(Json::createObjectBuilder);
 
         links.ifPresent(l -> jsonObjectBuilder.add("_links", l));

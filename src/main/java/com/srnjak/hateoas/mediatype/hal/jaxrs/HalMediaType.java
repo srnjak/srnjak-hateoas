@@ -1,4 +1,4 @@
-package com.srnjak.hateoas.hal;
+package com.srnjak.hateoas.mediatype.hal.jaxrs;
 
 import lombok.experimental.UtilityClass;
 

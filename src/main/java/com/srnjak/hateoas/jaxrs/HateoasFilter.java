@@ -9,12 +9,21 @@ import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Provider;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * JAX-RS response filter which extracts an entity from a
+ * {@link HypermediaModel} object, if client requests for application/json
+ * format.
+ */
 @Provider
 public class HateoasFilter implements ContainerResponseFilter {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void filter(
             ContainerRequestContext requestCtx,
@@ -31,6 +40,12 @@ public class HateoasFilter implements ContainerResponseFilter {
                 .ifPresent(e -> responseCtx.setEntity(getEntity(e)));
     }
 
+    /**
+     * Extracts entity from hypermedia model
+     *
+     * @param hypermediaModel The hypermedia model
+     * @return The extracted entity
+     */
     private Object getEntity(HypermediaModel hypermediaModel) {
 
         Optional<Object> e1 = Optional.of(hypermediaModel)
@@ -46,13 +61,25 @@ public class HateoasFilter implements ContainerResponseFilter {
         return e1.orElse(e2.orElse(null));
     }
 
+    /**
+     * Extracts entity from entity model
+     *
+     * @param entityModel The entity model
+     * @return The extracted entity
+     */
     private Object getEntity(EntityModel<?> entityModel) {
-        return entityModel.getContent();
+        return entityModel.getEntity();
     }
 
-    private Object getEntity(CollectionModel<?> collectionModel) {
+    /**
+     * Extracts collection of entities from collection model
+     *
+     * @param collectionModel The collection model
+     * @return The list of extracted entities
+     */
+    private List<?> getEntity(CollectionModel<?> collectionModel) {
         return  collectionModel.getContent().stream()
-                .map(EntityModel::getContent)
+                .map(EntityModel::getEntity)
                 .collect(Collectors.toList());
     }
 

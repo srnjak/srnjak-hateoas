@@ -14,11 +14,22 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+/**
+ * JAX-RS message body writer for {@link EntityModel} into HAL json
+ * representation.
+ * <br>
+ * <br> If client requests application/hal+json type, this writer comes in and
+ * prepares the response.
+ */
 @Provider
 @Produces(HalMediaType.APPLICATION_HAL_JSON)
-public class HalObjectWriter implements MessageBodyWriter<EntityModel<?>> {
+public class HalEntityWriter implements MessageBodyWriter<EntityModel<?>> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isWriteable(
             Class<?> aClass,
@@ -29,6 +40,9 @@ public class HalObjectWriter implements MessageBodyWriter<EntityModel<?>> {
         return EntityModel.class.isAssignableFrom(aClass);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(
             EntityModel<?> entityModel,
@@ -44,6 +58,6 @@ public class HalObjectWriter implements MessageBodyWriter<EntityModel<?>> {
                 .toJsonObject()
                 .toString();
 
-        outputStream.write(json.getBytes(Charset.forName("UTF-8")));
+        outputStream.write(json.getBytes(StandardCharsets.UTF_8));
     }
 }

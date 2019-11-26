@@ -13,13 +13,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
+/**
+ * JAX-RS message body writer for {@link CollectionModel} into HAL json
+ * representation.
+ * <br>
+ * <br> If client requests application/hal+json type, this writer comes in and
+ * prepares the response.
+ */
 @Provider
 @Produces(HalMediaType.APPLICATION_HAL_JSON)
-public class HalObjectArrayWriter
+public class HalCollectionWriter
         implements MessageBodyWriter<CollectionModel<?>> {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isWriteable(
             Class<?> aClass,
@@ -30,6 +40,9 @@ public class HalObjectArrayWriter
         return CollectionModel.class.isAssignableFrom(aClass);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeTo(
             CollectionModel<?> collectionModel,
@@ -45,6 +58,6 @@ public class HalObjectArrayWriter
                 .toJsonObject()
                 .toString();
 
-        outputStream.write(json.getBytes(Charset.forName("UTF-8")));
+        outputStream.write(json.getBytes(StandardCharsets.UTF_8));
     }
 }

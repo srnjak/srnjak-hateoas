@@ -5,45 +5,76 @@ import lombok.Value;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
 
+/**
+ * Holder for curies objects in HAL representation.
+ */
 @Value
 public class HalCuries {
 
+    /**
+     * The builder class
+     */
     public static class Builder {
+
+        /**
+         * The set of curies.
+         */
         private Set<HalCurie> halCurieSet = new HashSet<>();
 
+        /**
+         * Adds a curie to the set.
+         *
+         * @param halCurie The curie
+         * @return This builder
+         */
         public Builder add(HalCurie halCurie) {
             this.halCurieSet.add(halCurie);
             return this;
         }
 
+        /**
+         * Adds all curies to the set from another builder.
+         *
+         * @param builder The another builder
+         * @return This builder
+         */
         public Builder addAll(Builder builder) {
             this.halCurieSet.addAll(builder.halCurieSet);
             return this;
         }
 
+        /**
+         * Builds the {@link HalCuries} instance.
+         *
+         * @return The built {@link HalCuries} instance.
+         */
         public HalCuries build() {
             return Optional.of(this.halCurieSet)
                     .filter(c -> !c.isEmpty())
-                    .map(c -> {
-                        return new HalCuries(Collections.unmodifiableSet(
-                                this.halCurieSet));
-                    })
+                    .map(c -> new HalCuries(Collections.unmodifiableSet(
+                            this.halCurieSet)))
                     .orElse(null);
         }
     }
 
+    /**
+     * @return The builder for this class
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Creates a collector for curies.
+     *
+     * @return The collector
+     */
     public static Collector<HalCurie, Builder, HalCuries> collector() {
 
         return Collector.of(
@@ -54,25 +85,37 @@ public class HalCuries {
         );
     }
 
-    static void add(Builder builder, HalCurie halCurie) {
+    /**
+     * Adds a curie to a builder.
+     *
+     * @param builder The builder
+     * @param halCurie The curie
+     */
+    private static void add(Builder builder, HalCurie halCurie) {
         builder.add(halCurie);
     }
 
-    static Builder addAll(Builder builder, Builder builder2) {
+    /**
+     * Adds curies from one builder into another one.
+     *
+     * @param builder The builder where curies will be added into
+     * @param builder2 The builder from which curies will be added from
+     * @return The builder with added curies
+     */
+    private static Builder addAll(Builder builder, Builder builder2) {
         return builder.addAll(builder2);
     }
 
-    static void addCurieToJson(JsonArrayBuilder builder, HalCurie curie) {
-
-        JsonObject jsonObject = Optional.of(curie)
-                .map(c -> c.toJsonObject())
-                .get();
-
-        builder.add(jsonObject);
-    }
-
+    /**
+     * The set of curies.
+     */
     private Set<HalCurie> halCurieSet;
 
+    /**
+     * Generates json object.
+     *
+     * @return The json object
+     */
     public JsonArray toJsonArray() {
         return this.halCurieSet.stream()
                 .map(HalCurie::toJsonObject)

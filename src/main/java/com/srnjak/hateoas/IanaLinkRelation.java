@@ -21,7 +21,7 @@ public class IanaLinkRelation extends LinkRelation {
          * {@inheritDoc}
          */
         @Override
-        public String name() {
+        public String prefix() {
             return null;
         }
     };

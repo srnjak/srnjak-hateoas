@@ -3,11 +3,6 @@ package com.srnjak.hateoas.mediatype.hal;
 import lombok.NonNull;
 import lombok.Value;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.bind.JsonbBuilder;
-import java.io.StringReader;
 import java.util.*;
 
 /**
@@ -20,25 +15,15 @@ import java.util.*;
 public class HalObject {
 
     /**
-     * The links property name.
-     */
-    public static final String LINKS = "_links";
-
-    /**
-     * The embedded property name.
-     */
-    public static final String EMBEDDED = "_embedded";
-
-    /**
      * The builder class
      */
     @SuppressWarnings("WeakerAccess")
     public static class Builder {
 
         /**
-         * The json object
+         * The wrapped object
          */
-        JsonObject jsonObject;
+        Object object;
 
         /**
          * The embedded objects
@@ -66,27 +51,7 @@ public class HalObject {
          * @param object The object to be wrapped into HAL representation
          */
         public Builder(Object object) {
-            this(JsonbBuilder.create().toJson(object));
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param json The json string to be wrapped into HAL representation
-         */
-        public Builder(String json) {
-            this.jsonObject =
-                    Json.createReader(new StringReader(json)).readObject();
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param jsonObject The json object to be wrapped into
-         *                   HAL representation
-         */
-        public Builder(JsonObject jsonObject) {
-            this.jsonObject = jsonObject;
+            this.object = object;
         }
 
         /**
@@ -214,7 +179,7 @@ public class HalObject {
                     .collect(HalLinks.collector(curies));
 
             return new HalObject(
-                    this.jsonObject,
+                    this.object,
                     halLinks,
                     this.embedded);
         }
@@ -236,25 +201,9 @@ public class HalObject {
     }
 
     /**
-     * @param json Json to be wrapped into HAL
-     * @return The builder for this class
+     * The wrapped object.
      */
-    public static Builder builder(String json) {
-        return new Builder(json);
-    }
-
-    /**
-     * @param jsonObject Json object to be wrapped into HAL
-     * @return The builder for this class
-     */
-    public static Builder builder(JsonObject jsonObject) {
-        return new Builder(jsonObject);
-    }
-
-    /**
-     * The wrapped json object.
-     */
-    JsonObject jsonObject;
+    Object object;
 
     /**
      * The links related to the object representation.
@@ -265,30 +214,5 @@ public class HalObject {
      * The embedded objects.
      */
     HalEmbedded embedded;
-
-    /**
-     * Generates json object of HAL representation.
-     *
-     * @return The json object
-     */
-    public JsonObject toJsonObject() {
-
-        Optional<JsonObject> links =
-                Optional.ofNullable(this.halLinks).map(HalLinks::toJsonObject);
-        Optional<JsonObject> embedded =
-                Optional.ofNullable(this.embedded)
-                        .map(HalEmbedded::toJsonObject);
-
-        JsonObjectBuilder jsonObjectBuilder =
-                Optional.ofNullable(this.jsonObject)
-                        .map(o -> Json.createObjectBuilder(o)
-                                .addAll(Json.createObjectBuilder(o)))
-                        .orElseGet(Json::createObjectBuilder);
-
-        links.ifPresent(l -> jsonObjectBuilder.add(LINKS, l));
-        embedded.ifPresent(e -> jsonObjectBuilder.add(EMBEDDED, e));
-
-        return jsonObjectBuilder.build();
-    }
 
 }

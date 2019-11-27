@@ -1,10 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import com.srnjak.hateoas.utils.JsonBuilderUtils;
 import lombok.Value;
 
-import javax.json.Json;
-import javax.json.JsonArray;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
@@ -110,19 +107,4 @@ public class HalCuries {
      * The set of curies.
      */
     private Set<HalCurie> halCurieSet;
-
-    /**
-     * Generates json object.
-     *
-     * @return The json object
-     */
-    public JsonArray toJsonArray() {
-        return this.halCurieSet.stream()
-                .map(HalCurie::toJsonObject)
-                .map(Json::createObjectBuilder)
-                .collect(Json::createArrayBuilder,
-                        JsonBuilderUtils::add,
-                        JsonBuilderUtils::add)
-                .build();
-    }
 }

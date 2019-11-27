@@ -1,18 +1,17 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import com.srnjak.hateoas.utils.JsonBuilderUtils;
+import lombok.Getter;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collector;
 
 /**
  * Holder for link objects in HAL representation.
  */
+@Getter
 public final class HalLinks {
 
     /**
@@ -79,11 +78,6 @@ public final class HalLinks {
     }
 
     /**
-     * The curies json property name
-     */
-    public static final String CURIES = "curies";
-
-    /**
      * @return The builder for this class
      */
     public static Builder builder() {
@@ -144,39 +138,6 @@ public final class HalLinks {
     }
 
     /**
-     * Adds entry to json builder.
-     *
-     * @param builder The json builder
-     * @param entry The entry
-     */
-    private static void addEntryToJson(
-            JsonObjectBuilder builder, HalLinkEntry entry) {
-
-        Map<Class<?>, Runnable> map = new HashMap<>();
-        map.put(HalLinkObjectEntry.class, () -> {
-            HalLinkObjectEntry objectEntry = (HalLinkObjectEntry) entry;
-
-            builder.add(
-                    objectEntry.getRel(),
-                    objectEntry.getHalLink().toJsonObject());
-        });
-
-        map.put(HalLinkListEntry.class, () -> {
-            HalLinkListEntry listEntry = (HalLinkListEntry) entry;
-
-            JsonArrayBuilder jsonArrayBuilder = listEntry.getHalLinkList()
-                    .stream()
-                    .map(HalLink::toJsonObject)
-                    .map(Json::createObjectBuilder)
-                    .collect(JsonBuilderUtils.collector());
-
-            builder.add(listEntry.getRel(), jsonArrayBuilder);
-        });
-
-        map.get(entry.getClass()).run();
-    }
-
-    /**
      * The set of link entries.
      */
     private Set<HalLinkEntry> entrySet;
@@ -195,25 +156,5 @@ public final class HalLinks {
     private HalLinks(Set<HalLinkEntry> entrySet, HalCuries curies) {
         this.entrySet = entrySet;
         this.curies = curies;
-    }
-
-    /**
-     * Generates json object.
-     *
-     * @return The json object
-     */
-    public JsonObject toJsonObject() {
-
-        JsonObjectBuilder jsonObjectBuilder = this.entrySet.stream()
-                .collect(Json::createObjectBuilder,
-                        HalLinks::addEntryToJson,
-                        JsonBuilderUtils::add);
-
-        Optional.ofNullable(this.curies)
-                .ifPresent(c -> {
-                    jsonObjectBuilder.add(CURIES, curies.toJsonArray());
-                });
-
-        return jsonObjectBuilder.build();
     }
 }

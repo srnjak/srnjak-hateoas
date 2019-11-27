@@ -4,11 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import java.util.Optional;
-
 /**
  * A Link representation.
  */
@@ -86,33 +81,4 @@ public class HalLink {
      * @see <a href="https://tools.ietf.org/html/rfc5988">RFC5988</a>
      */
     private String hreflang;
-
-    /**
-     * Generates json object.
-     *
-     * @return The json object
-     */
-    public JsonObject toJsonObject() {
-
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-
-        Optional.ofNullable(this.href)
-                .ifPresent(h -> builder.add(Fields.href, h));
-        Optional.ofNullable(this.templated)
-                .ifPresent(t -> builder.add(Fields.templated, t));
-        Optional.ofNullable(this.type)
-                .ifPresent(t -> builder.add(Fields.type, t));
-        Optional.ofNullable(this.deprecation)
-                .ifPresent(d -> builder.add(Fields.deprecation, d));
-        Optional.ofNullable(this.name)
-                .ifPresent(n -> builder.add(Fields.name, n));
-        Optional.ofNullable(this.profile)
-                .ifPresent(p -> builder.add(Fields.profile, p));
-        Optional.ofNullable(this.title)
-                .ifPresent(t -> builder.add(Fields.title, t));
-        Optional.ofNullable(this.hreflang)
-                .ifPresent(h -> builder.add(Fields.hreflang, h));
-
-        return builder.build();
-    }
 }

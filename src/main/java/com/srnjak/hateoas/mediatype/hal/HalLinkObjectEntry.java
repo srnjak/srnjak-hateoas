@@ -2,11 +2,6 @@ package com.srnjak.hateoas.mediatype.hal;
 
 import lombok.Getter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collector;
-
 /**
  * An entry of a "links" object with a single link.
  */

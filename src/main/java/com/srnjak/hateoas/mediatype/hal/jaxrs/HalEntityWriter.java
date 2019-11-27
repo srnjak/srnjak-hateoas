@@ -2,6 +2,7 @@ package com.srnjak.hateoas.mediatype.hal.jaxrs;
 
 import com.srnjak.hateoas.EntityModel;
 import com.srnjak.hateoas.mediatype.hal.HalMapper;
+import com.srnjak.hateoas.mediatype.hal.json.HalObjectJson;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
@@ -15,6 +16,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
  * JAX-RS message body writer for {@link EntityModel} into HAL json
@@ -54,9 +56,12 @@ public class HalEntityWriter implements MessageBodyWriter<EntityModel<?>> {
             OutputStream outputStream)
             throws IOException, WebApplicationException {
 
-        String json = HalMapper.toHalObject(entityModel)
-                .toJsonObject()
-                .toString();
+        String json = Optional.of(entityModel)
+                .map(HalMapper::toHalObject)
+                .map(HalObjectJson::new)
+                .map(HalObjectJson::toJsonObject)
+                .map(Object::toString)
+                .get();
 
         outputStream.write(json.getBytes(StandardCharsets.UTF_8));
     }

@@ -4,11 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import java.util.Optional;
-
 /**
  * A curie representation.
  *
@@ -36,22 +31,4 @@ public class HalCurie {
      * Whether href attribute is url template.
      */
     private Boolean templated;
-
-    /**
-     * Generates json object.
-     *
-     * @return The json object
-     */
-    public JsonObject toJsonObject() {
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-
-        Optional.ofNullable(this.name)
-                .ifPresent(n -> builder.add(Fields.name, n));
-        Optional.ofNullable(this.href)
-                .ifPresent(h -> builder.add(Fields.href, h));
-        Optional.ofNullable(this.templated)
-                .ifPresent(t -> builder.add(Fields.templated, t));
-
-        return builder.build();
-    }
 }

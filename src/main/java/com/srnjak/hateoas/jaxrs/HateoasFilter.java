@@ -32,12 +32,12 @@ public class HateoasFilter implements ContainerResponseFilter {
         Variant variant = requestCtx.getRequest().selectVariant(
                 HateoasVariants.SUPPORTED_VARIANTS);
 
-        Optional.ofNullable(variant)
-                .filter(v -> v.equals(HateoasVariants.VARIANT_APPLICATION_JSON))
-                .flatMap(v -> Optional.ofNullable(responseCtx.getEntity())
-                        .filter(e -> e instanceof HypermediaModel)
-                        .map(e -> (HypermediaModel) e))
-                .ifPresent(e -> responseCtx.setEntity(getEntity(e)));
+        if (variant == null) {
+            Optional.ofNullable(responseCtx.getEntity())
+                    .filter(e -> e instanceof HypermediaModel)
+                    .map(e -> (HypermediaModel) e)
+                    .ifPresent(e -> responseCtx.setEntity(getEntity(e)));
+        }
     }
 
     /**

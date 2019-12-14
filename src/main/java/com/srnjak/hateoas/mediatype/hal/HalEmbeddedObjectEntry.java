@@ -1,11 +1,11 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import lombok.Getter;
+import lombok.Value;
 
 /**
  * Single entry of an embedded object.
  */
-@Getter
+@Value
 public final class HalEmbeddedObjectEntry implements HalEmbeddedEntry {
 
     /**
@@ -69,15 +69,4 @@ public final class HalEmbeddedObjectEntry implements HalEmbeddedEntry {
      * The object of the embedded entry
      */
     private final HalObject halObject;
-
-    /**
-     * Constructor.
-     *
-     * @param rel The relation of the embedded entry
-     * @param halObject The object in the embedded entry
-     */
-    public HalEmbeddedObjectEntry(String rel, HalObject halObject) {
-        this.rel = rel;
-        this.halObject = halObject;
-    }
 }

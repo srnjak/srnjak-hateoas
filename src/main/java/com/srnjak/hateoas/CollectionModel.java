@@ -2,6 +2,7 @@ package com.srnjak.hateoas;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +15,7 @@ import java.util.List;
  * @param <T>
  */
 @Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class CollectionModel<T extends EntityModel<?>> extends HypermediaModel {
 

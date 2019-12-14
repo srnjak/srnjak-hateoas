@@ -2,6 +2,7 @@ package com.srnjak.hateoas;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Collection;
 
@@ -11,6 +12,7 @@ import java.util.Collection;
  * @param <T> The type of the entity.
  */
 @Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class EntityModel<T> extends HypermediaModel {
 

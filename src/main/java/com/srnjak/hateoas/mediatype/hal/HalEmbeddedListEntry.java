@@ -1,6 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import lombok.Getter;
+import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.stream.Collector;
 /**
  * List entry of an embedded object.
  */
-@Getter
+@Value
 public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
 
     /**

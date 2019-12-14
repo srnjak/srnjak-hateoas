@@ -1,6 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import lombok.Getter;
+import lombok.Value;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,7 +11,7 @@ import java.util.stream.Collector;
 /**
  * Holder for link objects in HAL representation.
  */
-@Getter
+@Value
 public final class HalLinks {
 
     /**
@@ -147,14 +147,4 @@ public final class HalLinks {
      */
     private HalCuries curies;
 
-    /**
-     * Constructor.
-     *
-     * @param entrySet The set of link entries
-     * @param curies The curies
-     */
-    private HalLinks(Set<HalLinkEntry> entrySet, HalCuries curies) {
-        this.entrySet = entrySet;
-        this.curies = curies;
-    }
 }

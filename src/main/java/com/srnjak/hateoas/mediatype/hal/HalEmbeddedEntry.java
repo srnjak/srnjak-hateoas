@@ -3,4 +3,10 @@ package com.srnjak.hateoas.mediatype.hal;
 /**
  * An entry of an embedded object.
  */
-public interface HalEmbeddedEntry {}
+public interface HalEmbeddedEntry {
+
+    /**
+     * @return The relation of the embedded.
+     */
+    String getRel();
+}

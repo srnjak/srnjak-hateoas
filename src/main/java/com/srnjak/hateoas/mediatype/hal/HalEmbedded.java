@@ -1,8 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Value;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,8 +9,7 @@ import java.util.Set;
 /**
  * Holder for embedded objects in HAL representation.
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
+@Value
 public final class HalEmbedded {
 
     /**

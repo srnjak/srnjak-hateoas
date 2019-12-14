@@ -121,10 +121,7 @@ public class HalMapper {
 
                     List<Link> linkList = linksPerRel.get(r);
 
-                    String rel = Optional.ofNullable(
-                            r.getRelationType().prefix())
-                            .map(rt -> rt + ":" + r.getValue())
-                            .orElse(r.getValue());
+                    String rel = toRel(r);
 
                     Stream<HalLink> halLinkStream = linkList.stream()
                             .map(HalMapper::toHalLink);
@@ -145,6 +142,19 @@ public class HalMapper {
                     return halLinkEntry;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Extract a rel attribute from a link relation.
+     *
+     * @param linkRelation The link relation
+     * @return The rel attribute
+     */
+    public static String toRel(LinkRelation linkRelation) {
+        return Optional.ofNullable(
+                linkRelation.getRelationType().prefix())
+                .map(rt -> rt + ":" + linkRelation.getValue())
+                .orElse(linkRelation.getValue());
     }
 
     /**

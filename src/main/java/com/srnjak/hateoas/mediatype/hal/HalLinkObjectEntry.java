@@ -1,11 +1,11 @@
 package com.srnjak.hateoas.mediatype.hal;
 
-import lombok.Getter;
+import lombok.Value;
 
 /**
  * An entry of a "links" object with a single link.
  */
-@Getter
+@Value
 public final class HalLinkObjectEntry implements HalLinkEntry {
 
     /**
@@ -70,15 +70,4 @@ public final class HalLinkObjectEntry implements HalLinkEntry {
      * The link
      */
     private final HalLink halLink;
-
-    /**
-     * Constructor.
-     *
-     * @param rel The relation
-     * @param halLink The link
-     */
-    public HalLinkObjectEntry(String rel, HalLink halLink) {
-        this.rel = rel;
-        this.halLink = halLink;
-    }
 }

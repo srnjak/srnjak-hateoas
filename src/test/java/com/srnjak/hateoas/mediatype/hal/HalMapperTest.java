@@ -79,7 +79,7 @@ class HalMapperTest {
         entityList.add(entityModel1);
         entityList.add(entityModel2);
 
-        CollectionModel<EntityModel<Object>> collectionModel =
+        CollectionModel<Object> collectionModel =
                 new CollectionModel<>(
                         entityList,
                         generateIanaLink(IanaLinkRelation.SELF),

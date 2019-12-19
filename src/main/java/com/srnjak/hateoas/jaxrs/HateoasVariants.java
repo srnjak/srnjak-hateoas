@@ -25,11 +25,20 @@ public class HateoasVariants {
                     (String) null, null);
 
     /**
+     * The variant of application/hal+xml type.
+     */
+    public static final Variant VARIANT_APPLICATION_HAL_XML =
+            new Variant(
+                    HalMediaType.APPLICATION_HAL_XML_TYPE,
+                    (String) null, null);
+
+    /**
      * The list of supported variants.
      */
     public static final List<Variant> SUPPORTED_VARIANTS =
             Stream.of(
-                    HateoasVariants.VARIANT_APPLICATION_HAL_JSON)
+                    HateoasVariants.VARIANT_APPLICATION_HAL_JSON,
+                    HateoasVariants.VARIANT_APPLICATION_HAL_XML)
                     .collect(Collectors.collectingAndThen(
                             Collectors.toList(),
                             Collections::unmodifiableList));

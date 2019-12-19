@@ -147,4 +147,10 @@ public final class HalLinks {
      */
     private HalCuries curies;
 
+    public Optional<HalLinkEntry> get(String rel) {
+        return entrySet.stream()
+                .filter(e -> e.getRel().equals(rel))
+                .findAny();
+    }
+
 }

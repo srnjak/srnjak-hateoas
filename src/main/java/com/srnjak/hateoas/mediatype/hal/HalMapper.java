@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
 import com.srnjak.hateoas.*;
+import com.srnjak.hateoas.utils.GenericEntityWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,16 @@ public class HalMapper {
 
         Map<LinkRelation, List<Link>> linksPerRel = getLinksPerRel(entityModel);
 
-        return HalObject.builder(entityModel.getEntity())
+        // generics
+        Object entity = Optional.of(entityModel)
+                .filter(e -> e instanceof  GenericEntityModel)
+                .map(e -> (GenericEntityModel<?>) e)
+                .map(e -> new GenericEntityWrapper(
+                        e.getEntity(), e.getGenericType()))
+                .map(e -> (Object) e)
+                .orElse(entityModel.getEntity());
+
+        return HalObject.builder(entity)
                 .addLinks(getHalLinkEntryList(linksPerRel))
                 .addCuries(getHalCuries(linksPerRel))
                 .build();

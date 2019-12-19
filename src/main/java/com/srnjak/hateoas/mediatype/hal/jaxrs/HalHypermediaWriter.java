@@ -56,12 +56,20 @@ public class HalHypermediaWriter implements MessageBodyWriter<HypermediaModel> {
             OutputStream outputStream)
             throws IOException, WebApplicationException {
 
+        System.out.println(hypermediaModel);
+
         String json = Optional.of(hypermediaModel)
                 .map(HalMapper::toHalObject)
+                .map(x -> {
+                    System.out.println(x);
+                    return x;
+                })
                 .map(HalObjectJson::new)
                 .map(HalObjectJson::toJsonObject)
                 .map(Object::toString)
                 .get();
+
+        System.out.println(json);
 
         outputStream.write(json.getBytes(StandardCharsets.UTF_8));
     }

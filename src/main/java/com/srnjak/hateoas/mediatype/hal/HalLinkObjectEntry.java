@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
 import lombok.Value;
+import lombok.experimental.FieldNameConstants;
 
 /**
  * An entry of a "links" object with a single link.

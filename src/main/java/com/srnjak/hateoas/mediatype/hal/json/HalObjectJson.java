@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
 import com.srnjak.hateoas.mediatype.hal.HalObject;
+import com.srnjak.hateoas.utils.GenericEntityWrapper;
 import lombok.AllArgsConstructor;
 
 import javax.json.Json;
@@ -31,6 +32,8 @@ public class HalObjectJson {
      */
     private HalObject halObject;
 
+    // TODO
+
     /**
      * Generates json object of HAL representation.
      *
@@ -49,7 +52,7 @@ public class HalObjectJson {
 
         JsonObjectBuilder jsonObjectBuilder =
                 Optional.ofNullable(halObject.getObject())
-                        .map(o -> JsonbBuilder.create().toJson(o))
+                        .map(this::toJson)
                         .map(j -> Json.createReader(new StringReader(j))
                                 .readObject())
                         .map(o -> Json.createObjectBuilder(o)
@@ -60,5 +63,14 @@ public class HalObjectJson {
         embedded.ifPresent(e -> jsonObjectBuilder.add(EMBEDDED, e));
 
         return jsonObjectBuilder.build();
+    }
+
+    private String toJson(Object object) {
+        return Optional.of(object)
+                .filter(o -> o instanceof GenericEntityWrapper)
+                .map(o -> (GenericEntityWrapper) o)
+                .map(o -> JsonbBuilder.create()
+                        .toJson(o.getEntity(), o.getGenericType()))
+                .orElseGet(() -> JsonbBuilder.create().toJson(object));
     }
 }

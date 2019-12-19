@@ -1,16 +1,18 @@
 package com.srnjak.hateoas.jaxrs;
 
-import com.srnjak.hateoas.CollectionModel;
-import com.srnjak.hateoas.EntityModel;
-import com.srnjak.hateoas.HypermediaModel;
+import com.srnjak.hateoas.*;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.Provider;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -48,17 +50,29 @@ public class HateoasFilter implements ContainerResponseFilter {
      */
     private Object getEntity(HypermediaModel hypermediaModel) {
 
-        Optional<Object> e1 = Optional.of(hypermediaModel)
-                .filter(h -> h instanceof EntityModel)
-                .map(h -> (EntityModel<?>) h)
-                .map(this::getEntity);
+        Map<Class<? extends HypermediaModel>, Function<HypermediaModel, Object>>
+                functionMap = new HashMap<>();
+        functionMap.put(
+                GenericEntityModel.class,
+                m -> this.getEntity((GenericEntityModel<?>) m));
+        functionMap.put(
+                EntityModel.class,
+                m -> this.getEntity((EntityModel<?>) m));
+        functionMap.put(
+                GenericCollectionModel.class,
+                m -> this.getEntity((GenericCollectionModel<?>) m));
+        functionMap.put(
+                CollectionModel.class,
+                m -> this.getEntity((CollectionModel<?>) m));
+        functionMap.put(HypermediaModel.class, m -> null);
 
-        Optional<Object> e2 = Optional.of(hypermediaModel)
-                .filter(h -> h instanceof CollectionModel)
-                .map(h -> (CollectionModel<?>) h)
-                .map(this::getEntity);
 
-        return e1.orElse(e2.orElse(null));
+        Class<?> clazz = hypermediaModel.getClass();
+        while (!functionMap.containsKey(clazz)) {
+            clazz = clazz.getSuperclass();
+        }
+
+        return functionMap.get(clazz).apply(hypermediaModel);
     }
 
     /**
@@ -67,8 +81,22 @@ public class HateoasFilter implements ContainerResponseFilter {
      * @param entityModel The entity model
      * @return The extracted entity
      */
-    private Object getEntity(EntityModel<?> entityModel) {
+    private <E> E getEntity(EntityModel<E> entityModel) {
         return entityModel.getEntity();
+    }
+
+    /**
+     * Extracts entity from entity model
+     *
+     * @param genericEntityModel The entity model
+     * @return The extracted entity
+     */
+    private <E> GenericEntity<E> getEntity(
+            GenericEntityModel<E> genericEntityModel) {
+
+        E entity = getEntity((EntityModel<E>) genericEntityModel);
+
+        return new GenericEntity<>(entity, genericEntityModel.getGenericType());
     }
 
     /**
@@ -77,10 +105,26 @@ public class HateoasFilter implements ContainerResponseFilter {
      * @param collectionModel The collection model
      * @return The list of extracted entities
      */
-    private List<?> getEntity(CollectionModel<?> collectionModel) {
-        return  collectionModel.getContent().stream()
+    private <E> List<E> getEntity(CollectionModel<E> collectionModel) {
+
+        return collectionModel.getContent().stream()
                 .map(EntityModel::getEntity)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Extracts collection of entities from collection model
+     *
+     * @param genericCollectionModel The collection model
+     * @return The list of extracted entities
+     */
+    private <E> GenericEntity<List<E>> getEntity(
+            GenericCollectionModel<E> genericCollectionModel) {
+
+        List<E> list = getEntity((CollectionModel<E>) genericCollectionModel);
+
+        return new GenericEntity<>(
+                list, genericCollectionModel.getGenericType());
     }
 
 }

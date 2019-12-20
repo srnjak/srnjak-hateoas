@@ -1,7 +1,8 @@
 package com.srnjak.hateoas.mediatype.hal.xml;
 
-import com.srnjak.hateoas.IanaLinkRelation;
-import com.srnjak.hateoas.mediatype.hal.HalLinkEntry;
+import com.srnjak.hateoas.LinkRelation;
+import com.srnjak.hateoas.relation.*;
+import com.srnjak.hateoas.mediatype.hal.CurieExtractor;
 import com.srnjak.hateoas.mediatype.hal.HalLinkObjectEntry;
 import com.srnjak.hateoas.mediatype.hal.HalObject;
 import com.srnjak.hateoas.utils.GenericEntityWrapper;
@@ -30,8 +31,16 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class HalObjectXml {
 
+    /**
+     * The hal representation of an entity object
+     */
     private HalObject halObject;
 
+    /**
+     * Transforms into a hal representation of an entity in a XML document.
+     *
+     * @return The XML document
+     */
     public Document toXmlDocument() {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -47,25 +56,40 @@ public class HalObjectXml {
         doc.setXmlStandalone(true);
 
         Element rootResource =
-                toResourceElement(doc, IanaLinkRelation.SELF.getValue());
+                toResourceElement(doc, IanaLinkRelation.SELF);
 
-        // TODO curie
-        rootResource.setAttributeNS(XMLConstants.XMLNS_ATTRIBUTE_NS_URI, "xmlns:pref", "http://blabla");
+        // curie
+        CurieExtractor extractor = new CurieExtractor(this.halObject);
+        Set<CurieDefinition> curieDefinitions = extractor.extract();
+
+        curieDefinitions.forEach(c -> {
+            rootResource.setAttributeNS(
+                    XMLConstants.XMLNS_ATTRIBUTE_NS_URI,
+                    "xmlns:" + c.getPrefix(),
+                    c.getHref());
+        });
 
         doc.appendChild(rootResource);
 
         return doc;
     }
 
-    public Element toResourceElement(Document doc, String rel) {
+    /**
+     * Transforms into a resource element.
+     *
+     * @param doc The document to which the new element will be pointing to.
+     * @param rel The relation to the resource
+     * @return The resource element
+     */
+    public Element toResourceElement(Document doc, LinkRelation rel) {
         Element element = doc.createElement("resource");
 
-        halObject.getHalLinks().get(IanaLinkRelation.SELF.getValue())
+        halObject.getHalLinks().get(IanaLinkRelation.SELF)
                 .filter(e -> e instanceof HalLinkObjectEntry)
                 .map(e -> (HalLinkObjectEntry) e)
                 .map(HalLinkObjectEntry::getHalLink)
                 .ifPresent(l -> {
-                    element.setAttribute("rel", rel);
+                    element.setAttribute("rel", rel.getValue());
                     HalLinksXml.setLinkAttributesToElement(element, l);
                 });
 
@@ -93,6 +117,11 @@ public class HalObjectXml {
         return element;
     }
 
+    /**
+     * Extracts xml nodes from an entity object.
+     *
+     * @return The nodes.
+     */
     private List<Node> getNodes() {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -129,6 +158,13 @@ public class HalObjectXml {
         return Collections.unmodifiableList(nodeList);
     }
 
+    /**
+     * Extract an object if it is wrapped into a {@link GenericEntityWrapper}.
+     *
+     * @param object The object which might be wrapped into
+     *               a {@link GenericEntityWrapper}.
+     * @return The unwrapped object
+     */
     private Object extractIfWrapper(Object object) {
         return Optional.of(object)
                 .filter(o -> o instanceof GenericEntityWrapper)
@@ -137,6 +173,14 @@ public class HalObjectXml {
                 .orElse(object);
     }
 
+    /**
+     * Provides {@link JAXBContext} depending on if an object is
+     * wrapped into {@link GenericEntityWrapper}.
+     *
+     * @param object The object which might be wrapped into
+     *               a {@link GenericEntityWrapper}
+     * @return The instance of {@link JAXBContext}
+     */
     private JAXBContext getJAXBContext(Object object) {
         return Optional.of(object)
                 .filter(o -> o instanceof GenericEntityWrapper)
@@ -163,6 +207,13 @@ public class HalObjectXml {
                 });
     }
 
+    /**
+     * Extracts classes from an actual type arguments if the provided
+     * type of a generic is instance of {@link ParameterizedType}.
+     *
+     * @param genericType The generic type
+     * @return The list of extracted classes
+     */
     private List<Class<?>> extractTypeClasses(Type genericType) {
         return Optional.of(genericType)
                 .filter(t -> t instanceof ParameterizedType)

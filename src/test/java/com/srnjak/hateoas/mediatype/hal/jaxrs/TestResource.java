@@ -2,7 +2,8 @@ package com.srnjak.hateoas.mediatype.hal.jaxrs;
 
 import com.srnjak.hateoas.CollectionModel;
 import com.srnjak.hateoas.EntityModel;
-import com.srnjak.hateoas.IanaLinkRelation;
+import com.srnjak.hateoas.mediatype.hal.TestCurieRelation;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import com.srnjak.hateoas.Link;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsCollectionModel;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsEntityModel;
@@ -38,9 +39,18 @@ public class TestResource {
         testEntity.setEnabled(true);
 
         EntityModel<TestEntity> entityModel = new EntityModel<>(testEntity);
-        entityModel.addLink(Link.builder().relation(IanaLinkRelation.SELF).href("http://www.example.com/").build());
-        entityModel.addLink(Link.builder().relation(IanaLinkRelation.PREV).href("http://www.example.com/prev").build());
-        entityModel.addLink(Link.builder().relation(IanaLinkRelation.NEXT).href("http://www.example.com/next").build());
+        entityModel.addLink(Link.builder()
+                .relation(IanaLinkRelation.SELF)
+                .href("http://www.example.com/")
+                .build());
+        entityModel.addLink(Link.builder()
+                .relation(IanaLinkRelation.PREV)
+                .href("http://www.example.com/prev")
+                .build());
+        entityModel.addLink(Link.builder()
+                .relation(IanaLinkRelation.NEXT)
+                .href("http://www.example.com/next")
+                .build());
 
         return Response.ok(entityModel).build();
     }
@@ -64,14 +74,22 @@ public class TestResource {
         testGenEntity.setId(UUID.randomUUID().toString());
         testGenEntity.setGenericProperty(testEntity);
 
-//        EntityModel<TestGenericEntity> entityModel = new EntityModel<>(testGenEntity);
         EntityModel<TestGenericEntity<TestEntity>> entityModel =
                 new GenericJaxrsEntityModel<>(
-                        testGenEntity, new GenericType<TestGenericEntity<TestEntity>>(){});
+                        testGenEntity, new GenericType<>(){});
 
-        entityModel.addLink(Link.builder().relation(IanaLinkRelation.SELF).href("http://www.example.com/").build());
-        entityModel.addLink(Link.builder().relation(IanaLinkRelation.PREV).href("http://www.example.com/prev").build());
-        entityModel.addLink(Link.builder().relation(IanaLinkRelation.NEXT).href("http://www.example.com/next").build());
+        entityModel.addLink(Link.builder()
+                .relation(IanaLinkRelation.SELF)
+                .href("http://www.example.com/")
+                .build());
+        entityModel.addLink(Link.builder()
+                .relation(IanaLinkRelation.PREV)
+                .href("http://www.example.com/prev")
+                .build());
+        entityModel.addLink(Link.builder()
+                .relation(IanaLinkRelation.NEXT)
+                .href("http://www.example.com/next")
+                .build());
 
         return Response.ok(entityModel).build();
     }
@@ -95,7 +113,8 @@ public class TestResource {
         testGenEntity.setId(UUID.randomUUID().toString());
         testGenEntity.setGenericProperty(testEntity);
 
-        GenericEntity<TestGenericEntity<TestEntity>> ge = new GenericEntity<>(testGenEntity) {};
+        GenericEntity<TestGenericEntity<TestEntity>> ge =
+                new GenericEntity<>(testGenEntity) {};
 
         return Response.ok(ge).build();
     }
@@ -145,6 +164,10 @@ public class TestResource {
                             .relation(IanaLinkRelation.NEXT)
                             .href("http://www.example.com/next/" + e.getId())
                             .build());
+                    entityModel.addLink(Link.builder()
+                            .relation(TestCurieRelation.SAMPLE)
+                            .href("http://www.example.com/next/" + e.getId())
+                            .build());
 
                     return entityModel;
                 })
@@ -157,6 +180,11 @@ public class TestResource {
         collectionModel.addLink(
                 Link.builder()
                         .relation(IanaLinkRelation.SELF)
+                        .href("http://www.example.com/")
+                        .build());
+        collectionModel.addLink(
+                Link.builder()
+                        .relation(TestCurieRelation.SAMPLE)
                         .href("http://www.example.com/")
                         .build());
 

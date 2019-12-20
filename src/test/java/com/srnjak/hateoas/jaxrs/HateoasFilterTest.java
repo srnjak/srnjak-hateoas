@@ -1,7 +1,7 @@
 package com.srnjak.hateoas.jaxrs;
 
 import com.srnjak.hateoas.EntityModel;
-import com.srnjak.hateoas.IanaLinkRelation;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import com.srnjak.hateoas.Link;
 import lombok.Data;
 import org.junit.jupiter.api.BeforeEach;

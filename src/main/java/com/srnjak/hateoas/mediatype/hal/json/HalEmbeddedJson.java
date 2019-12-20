@@ -52,10 +52,10 @@ public class HalEmbeddedJson {
 
         JsonObject jsonObject = Optional.ofNullable(entry.getHalObject())
                 .map(HalObjectJson::new)
-                .map(HalObjectJson::toJsonObject)
+                .map(HalObjectJson::toEmbeddedJsonObject)
                 .get();
 
-        builder.add(entry.getRel(), jsonObject);
+        builder.add(entry.getRel().getValue(), jsonObject);
     }
 
     /**
@@ -70,12 +70,12 @@ public class HalEmbeddedJson {
 
         JsonArray jsonArray = entry.getHalObjectList().stream()
                 .map(HalObjectJson::new)
-                .map(HalObjectJson::toJsonObject)
+                .map(HalObjectJson::toEmbeddedJsonObject)
                 .map(Json::createObjectBuilder)
                 .collect(JsonBuilderUtils.collector())
                 .build();
 
-        builder.add(entry.getRel(), jsonArray);
+        builder.add(entry.getRel().getValue(), jsonArray);
     }
 
     /**

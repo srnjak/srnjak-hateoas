@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
 import com.srnjak.hateoas.mediatype.hal.*;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
@@ -38,22 +39,22 @@ class HalEmbeddedJsonTest {
         HalObject halEmbedded3 = HalObject.builder().build();
 
         HalEmbeddedEntry halEmbeddedEntry1 =
-                HalEmbeddedObjectEntry.builder("a")
+                HalEmbeddedObjectEntry.builder(IanaLinkRelation.SELF)
                         .object(halEmbedded1)
                         .build();
 
         HalEmbeddedEntry halEmbeddedEntry2 =
-                HalEmbeddedObjectEntry.builder("b")
+                HalEmbeddedObjectEntry.builder(IanaLinkRelation.PREV)
                         .object(halEmbedded2)
                         .build();
 
         HalEmbeddedEntry halEmbeddedEntry3 =
-                HalEmbeddedObjectEntry.builder("c")
+                HalEmbeddedObjectEntry.builder(IanaLinkRelation.NEXT)
                         .object(halEmbedded3)
                         .build();
 
         HalEmbeddedEntry halEmbeddedEntry4 =
-                HalEmbeddedListEntry.builder("d")
+                HalEmbeddedListEntry.builder(IanaLinkRelation.ITEM)
                         .addObject(halEmbedded1)
                         .addObject(halEmbedded2)
                         .addObject(halEmbedded3)
@@ -82,10 +83,14 @@ class HalEmbeddedJsonTest {
         System.out.println(actual);
 
         assertEquals(4, actual.size());
-        assertContainsProperty(obj1, "/a", actual);
-        assertContainsProperty(obj2, "/b", actual);
-        assertContainsProperty(obj3, "/c", actual);
-        assertContainsProperty(array, "/d", actual);
+        assertContainsProperty(
+                obj1, "/" + IanaLinkRelation.SELF.getValue(), actual);
+        assertContainsProperty(
+                obj2, "/" + IanaLinkRelation.PREV.getValue(), actual);
+        assertContainsProperty(
+                obj3, "/" + IanaLinkRelation.NEXT.getValue(), actual);
+        assertContainsProperty(
+                array, "/" + IanaLinkRelation.ITEM.getValue(), actual);
 
     }
 

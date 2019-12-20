@@ -1,7 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
+import com.srnjak.hateoas.LinkRelation;
 import lombok.Value;
-import lombok.experimental.FieldNameConstants;
 
 /**
  * An entry of a "links" object with a single link.
@@ -17,7 +17,7 @@ public final class HalLinkObjectEntry implements HalLinkEntry {
         /**
          * The relation of the link.
          */
-        private String rel;
+        private LinkRelation rel;
 
         /**
          * The link
@@ -29,7 +29,7 @@ public final class HalLinkObjectEntry implements HalLinkEntry {
          *
          * @param rel The relation of the link entry
          */
-        public Builder rel(String rel) {
+        public Builder rel(LinkRelation rel) {
             this.rel = rel;
             return this;
         }
@@ -65,7 +65,7 @@ public final class HalLinkObjectEntry implements HalLinkEntry {
     /**
      * The relation of the links.
      */
-    private final String rel;
+    private final LinkRelation rel;
 
     /**
      * The link

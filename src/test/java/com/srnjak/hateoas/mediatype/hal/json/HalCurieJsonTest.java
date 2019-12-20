@@ -1,6 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
-import com.srnjak.hateoas.mediatype.hal.HalCurie;
+import com.srnjak.hateoas.relation.CurieDefinition;
 import org.junit.jupiter.api.Test;
 
 import javax.json.Json;
@@ -13,13 +13,12 @@ class HalCurieJsonTest {
     @Test
     public void convert_ToJson() {
 
-        HalCurie halCurie = HalCurie.builder()
-                .name("ts")
-                .href("http://www.example.com/{rel}")
-                .templated(true)
+        CurieDefinition curieDefinition = CurieDefinition.builder()
+                .prefix("ts")
+                .href("http://www.example.com/")
                 .build();
 
-        HalCurieJson tut = new HalCurieJson(halCurie);
+        CurieDefinitionJson tut = new CurieDefinitionJson(curieDefinition);
 
         JsonObject actual = tut.toJsonObject();
 

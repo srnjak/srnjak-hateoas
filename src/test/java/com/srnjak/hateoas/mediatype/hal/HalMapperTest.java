@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
 import com.srnjak.hateoas.*;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 
@@ -28,8 +29,6 @@ class HalMapperTest {
 
         assertNotNull(halObject);
         assertEquals(3, halObject.getHalLinks().getEntrySet().size());
-        assertEquals(1, halObject.getHalLinks().getCuries()
-                .getHalCurieSet().size());
         assertNull(halObject.getEmbedded());
     }
 
@@ -55,8 +54,6 @@ class HalMapperTest {
         assertNotNull(halObject);
         assertSame(entity, halObject.getObject());
         assertEquals(3, halObject.getHalLinks().getEntrySet().size());
-        assertEquals(1, halObject.getHalLinks().getCuries()
-                .getHalCurieSet().size());
         assertNull(halObject.getEmbedded());
     }
 
@@ -98,8 +95,6 @@ class HalMapperTest {
 
         // verify links
         assertEquals(3, halObject.getHalLinks().getEntrySet().size());
-        assertEquals(1, halObject.getHalLinks().getCuries()
-                .getHalCurieSet().size());
 
         // verify embedded
         assertNotNull(halObject.getEmbedded());
@@ -108,9 +103,7 @@ class HalMapperTest {
         // verify embedded item
         HalEmbeddedEntry embeddedEntry =
                 halObject.getEmbedded().getEntrySet().iterator().next();
-        assertEquals(
-                IanaLinkRelation.ITEM.getValue(),
-                embeddedEntry.getRel());
+        assertEquals(IanaLinkRelation.ITEM, embeddedEntry.getRel());
         assertTrue(embeddedEntry instanceof HalEmbeddedListEntry);
 
         // verify embedded list entries
@@ -151,72 +144,6 @@ class HalMapperTest {
         assertEquals(link.getHreflang(), halLink.getHreflang());
     }
 
-    @Test
-    public void convert_CurieRelationType() {
-
-        CurieRelationType curieRelationType = generateCurieRelationType();
-
-        HalCurie halCurie = HalMapper.toHalCurie(curieRelationType);
-
-//        System.out.println("halCurie: " + halCurie);
-
-        assertEquals(curieRelationType.getPrefix(), halCurie.getName());
-        assertEquals(
-                curieRelationType.getReference().getHref(),
-                halCurie.getHref());
-        assertEquals(
-                curieRelationType.getReference().getTemplated(),
-                halCurie.getTemplated());
-
-    }
-
-    @Test
-    public void prepare_Rel_WhenCurie() {
-
-        String prefix = "ts";
-        String relationName = "test";
-
-        CurieRelationType curieRelationType = new CurieRelationType();
-        curieRelationType.setPrefix(prefix);
-
-        LinkRelation linkRelation =
-                new LinkRelation(relationName, curieRelationType);
-
-        String rel = HalMapper.toRel(linkRelation);
-
-        assertEquals(prefix + ":" + relationName, rel);
-    }
-
-    @Test
-    public void prepare_Rel_WhenIana() {
-
-        String relationName = "test";
-
-        LinkRelation linkRelation =
-                new LinkRelation(relationName, IanaLinkRelation.RELATION_TYPE);
-
-        String rel = HalMapper.toRel(linkRelation);
-
-        assertEquals(relationName, rel);
-    }
-
-    @Test
-    public void prepare_Rel_WhenDefaultRelType() {
-
-        String uri = "http://www.example.com";
-        String relationName = "test";
-
-        DefaultRelationType defaultRelationType = new DefaultRelationType();
-        defaultRelationType.setUri(uri);
-
-        LinkRelation linkRelation =
-                new LinkRelation(relationName, defaultRelationType);
-
-        String rel = HalMapper.toRel(linkRelation);
-
-        assertEquals(uri + ":" + relationName, rel);
-    }
-
     /**
      * Generates {@link Link} with a {@link IanaLinkRelation} relation type.
      *
@@ -231,36 +158,15 @@ class HalMapperTest {
     }
 
     /**
-     * Generates {@link Link} with a {@link CurieRelationType} relation type.
+     * Generates {@link Link} with a curied relation.
      *
      * @return The generated link
      */
     private Link generateCurieLink() {
-        CurieRelationType curieRelationType = generateCurieRelationType();
-
-        LinkRelation linkRelation = new LinkRelation(
-                RandomStringUtils.randomAlphabetic(5), curieRelationType);
 
         return Link.builder()
-                .relation(linkRelation)
+                .relation(TestCurieRelation.SAMPLE)
                 .href(RandomStringUtils.randomAlphabetic(10))
                 .build();
-    }
-
-    /**
-     * Generates a {@link CurieRelationType} object.
-     *
-     * @return The {@link CurieRelationType} object
-     */
-    private CurieRelationType generateCurieRelationType() {
-        CurieReference curieReference = new CurieReference();
-        curieReference.setHref(
-                RandomStringUtils.randomAlphabetic(10) + "/{templ}");
-        curieReference.setTemplated(true);
-
-        CurieRelationType curieRelationType = new CurieRelationType();
-        curieRelationType.setPrefix(RandomStringUtils.randomAlphabetic(2));
-        curieRelationType.setReference(curieReference);
-        return curieRelationType;
     }
 }

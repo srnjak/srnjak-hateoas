@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
 import com.srnjak.hateoas.*;
+import com.srnjak.hateoas.relation.*;
 import com.srnjak.hateoas.utils.GenericEntityWrapper;
 
 import java.util.List;
@@ -28,7 +29,6 @@ public class HalMapper {
 
         return HalObject.builder()
                 .addLinks(getHalLinkEntryList(linksPerRel))
-                .addCuries(getHalCuries(linksPerRel))
                 .build();
     }
 
@@ -54,7 +54,6 @@ public class HalMapper {
 
         return HalObject.builder(entity)
                 .addLinks(getHalLinkEntryList(linksPerRel))
-                .addCuries(getHalCuries(linksPerRel))
                 .build();
     }
 
@@ -87,32 +86,12 @@ public class HalMapper {
                 collectionModel.getContent().stream()
                         .map(HalMapper::toHalObject)
                         .collect(HalEmbeddedListEntry.collector(
-                                IanaLinkRelation.ITEM.getValue()));
+                                IanaLinkRelation.ITEM));
 
         return HalObject.builder()
                 .addLinks(halLinkEntryList)
-                .addCuries(getHalCuries(linksPerRel))
                 .addEmbedded(HalEmbedded.builder().add(itemEmbedded).build())
                 .build();
-    }
-
-    /**
-     * Gets {@link HalCuries} object from map of {@link Link} objects list
-     * grouped by {@link LinkRelation}.
-     *
-     * @param linksPerRel The map of {@link Link} objects list
-     *                    grouped by {@link LinkRelation}
-     * @return The {@link HalCuries} object
-     */
-    private static HalCuries getHalCuries(
-            Map<LinkRelation, List<Link>> linksPerRel) {
-
-        return linksPerRel.keySet().stream()
-                .map(LinkRelation::getRelationType)
-                .filter(r -> r instanceof CurieRelationType)
-                .map(r -> (CurieRelationType) r)
-                .map(HalMapper::toHalCurie)
-                .collect(HalCuries.collector());
     }
 
     /**
@@ -127,11 +106,10 @@ public class HalMapper {
             Map<LinkRelation, List<Link>> linksPerRel) {
 
         return linksPerRel.keySet().stream()
+                .peek(HalMapper::verifyLinkRelation)
                 .map(r -> {
 
                     List<Link> linkList = linksPerRel.get(r);
-
-                    String rel = toRel(r);
 
                     Stream<HalLink> halLinkStream = linkList.stream()
                             .map(HalMapper::toHalLink);
@@ -139,11 +117,11 @@ public class HalMapper {
                     HalLinkEntry halLinkEntry;
                     if (linkList.size() > 1) {
                         halLinkEntry = halLinkStream.collect(
-                                HalLinkListEntry.collector(rel));
+                                HalLinkListEntry.collector(r));
                     } else {
                         halLinkEntry = halLinkStream.findAny()
                                 .map(l -> HalLinkObjectEntry.builder()
-                                        .rel(rel)
+                                        .rel(r)
                                         .setLink(l)
                                         .build())
                                 .orElseThrow();
@@ -155,16 +133,17 @@ public class HalMapper {
     }
 
     /**
-     * Extract a rel attribute from a link relation.
+     * Verifies if link relation is instance of a supported type.
      *
      * @param linkRelation The link relation
-     * @return The rel attribute
      */
-    public static String toRel(LinkRelation linkRelation) {
-        return Optional.ofNullable(
-                linkRelation.getRelationType().prefix())
-                .map(rt -> rt + ":" + linkRelation.getValue())
-                .orElse(linkRelation.getValue());
+    private static void verifyLinkRelation(LinkRelation linkRelation) {
+        Optional.of(linkRelation)
+                .filter(l -> l instanceof IanaLinkRelation
+                        || l instanceof CustomRelation)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Unsupported link relation type: "
+                                + linkRelation.getClass().getName()));
     }
 
     /**
@@ -176,7 +155,8 @@ public class HalMapper {
      *          grouped by {@link LinkRelation}
      */
     private static Map<LinkRelation, List<Link>> getLinksPerRel(
-            HypermediaModel entityModel) {
+            HypermediaModel<?> entityModel) {
+
         return entityModel.getLinkList().stream()
                 .collect(Collectors.groupingBy(Link::getRelation));
     }
@@ -197,20 +177,6 @@ public class HalMapper {
                 .profile(link.getProfile())
                 .title(link.getTitle())
                 .hreflang(link.getHreflang()).build();
-    }
-
-    /**
-     * Maps a {@link CurieRelationType} object into a {@link HalCurie} object.
-     *
-     * @param curieRelationType The {@link CurieRelationType} object
-     * @return The {@link HalCurie} object
-     */
-    public static HalCurie toHalCurie(CurieRelationType curieRelationType) {
-        return HalCurie.builder()
-                .name(curieRelationType.getPrefix())
-                .href(curieRelationType.getReference().getHref())
-                .templated(curieRelationType.getReference().getTemplated())
-                .build();
     }
 
 }

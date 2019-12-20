@@ -1,5 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
+import com.srnjak.hateoas.LinkRelation;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public final class HalLinkListEntry implements HalLinkEntry {
         /**
          * The relation of the links.
          */
-        private String rel;
+        private LinkRelation rel;
 
         /**
          * The list of links
@@ -33,7 +34,7 @@ public final class HalLinkListEntry implements HalLinkEntry {
          *
          * @param rel The relation of the link entry
          */
-        public Builder rel(String rel) {
+        public Builder rel(LinkRelation rel) {
             this.rel = rel;
             return this;
         }
@@ -84,7 +85,7 @@ public final class HalLinkListEntry implements HalLinkEntry {
      * @return The collector
      */
     public static Collector<HalLink, Builder, HalLinkListEntry> collector(
-            String rel) {
+            LinkRelation rel) {
 
         return Collector.of(
                 () -> HalLinkListEntry.builder().rel(rel),
@@ -118,7 +119,7 @@ public final class HalLinkListEntry implements HalLinkEntry {
     /**
      * The relation of the links.
      */
-    private final String rel;
+    private final LinkRelation rel;
 
     /**
      * The list of links
@@ -131,7 +132,7 @@ public final class HalLinkListEntry implements HalLinkEntry {
      * @param rel The relation
      * @param halLinkList The list of links
      */
-    public HalLinkListEntry(String rel, List<HalLink> halLinkList) {
+    public HalLinkListEntry(LinkRelation rel, List<HalLink> halLinkList) {
         this.rel = rel;
         this.halLinkList = Collections.unmodifiableList(halLinkList);
     }

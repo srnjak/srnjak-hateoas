@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
 import com.srnjak.hateoas.mediatype.hal.*;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import org.junit.jupiter.api.Test;
 
 import javax.json.Json;
@@ -29,22 +30,22 @@ class HalLinksJsonTest {
 
         HalLinkEntry halLinkEntry1 =
                 HalLinkObjectEntry.builder()
-                        .rel("a")
+                        .rel(IanaLinkRelation.SELF)
                         .setLink(halLink1)
                         .build();
         HalLinkEntry halLinkEntry2 =
                 HalLinkObjectEntry.builder()
-                        .rel("b")
+                        .rel(IanaLinkRelation.NEXT)
                         .setLink(halLink2)
                         .build();
         HalLinkEntry halLinkEntry3 =
                 HalLinkObjectEntry.builder()
-                        .rel("c")
+                        .rel(IanaLinkRelation.PREV)
                         .setLink(halLink3)
                         .build();
 
         HalLinkEntry halLinkEntry4 = HalLinkListEntry.builder()
-                .rel("d")
+                .rel(IanaLinkRelation.ITEM)
                 .addLink(halLink1)
                 .addLink(halLink2)
                 .addLink(halLink3)
@@ -72,9 +73,13 @@ class HalLinksJsonTest {
         JsonObject actual = tut.toJsonObject();
 
         assertEquals(4, actual.size());
-        assertContainsProperty(link1Obj, "/a", actual);
-        assertContainsProperty(link2Obj, "/b", actual);
-        assertContainsProperty(link3Obj, "/c", actual);
-        assertContainsProperty(linksArray, "/d", actual);
+        assertContainsProperty(
+                link1Obj, "/" + IanaLinkRelation.SELF.getValue(), actual);
+        assertContainsProperty(
+                link2Obj, "/" + IanaLinkRelation.NEXT.getValue(), actual);
+        assertContainsProperty(
+                link3Obj, "/" + IanaLinkRelation.PREV.getValue(), actual);
+        assertContainsProperty(
+                linksArray, "/" + IanaLinkRelation.ITEM.getValue(), actual);
     }
 }

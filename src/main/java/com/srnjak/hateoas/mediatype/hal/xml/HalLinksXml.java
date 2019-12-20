@@ -1,20 +1,15 @@
 package com.srnjak.hateoas.mediatype.hal.xml;
 
-import com.srnjak.hateoas.IanaLinkRelation;
 import com.srnjak.hateoas.mediatype.hal.*;
-import com.sun.xml.bind.v2.runtime.JAXBContextImpl;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import lombok.AllArgsConstructor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -24,11 +19,28 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class HalLinksXml {
 
+    /**
+     * The name of a "link" element.
+     */
     public static final String LINK_ELEMENT = "link";
+
+    /**
+     * The name of a "rel" attribute.
+     */
     public static final String REL_ATTRIBUTE = "rel";
 
+    /**
+     * The hal representation of a set of links.
+     */
     private HalLinks halLinks;
 
+    /**
+     * Transforms into a set of xml elements for hal representation of
+     * a set of links.
+     *
+     * @param document The document where elements will belong to
+     * @return The set of xml elements
+     */
     public Set<Element> toXmlElements(Document document) {
 
         Map<Class<? extends HalLinkEntry>,
@@ -46,18 +58,35 @@ public class HalLinksXml {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    /**
+     * Transforms into a set of xml elements for a single object from
+     * a {@link HalLinkObjectEntry} instance.
+     *
+     * @param document The document where elements will belong to
+     * @param entry The instance of {@link HalLinkObjectEntry}
+     * @return The set of xml elements
+     */
     private Set<Element> fromHalLinkObjectEntry(
             Document document, HalLinkEntry entry) {
 
         Element element = Optional.of(entry)
                 .filter(e -> e instanceof HalLinkObjectEntry)
                 .map(e -> (HalLinkObjectEntry) e)
-                .map(e -> toElement(document, e.getRel(), e.getHalLink()))
+                .map(e -> toElement(
+                        document, e.getRel().getValue(), e.getHalLink()))
                 .orElseThrow();
 
         return Set.of(element);
     }
 
+    /**
+     * Transforms into a set of xml elements for a list of objects from
+     * a {@link HalLinkListEntry} instance.
+     *
+     * @param document The document where elements will belong to
+     * @param entry The instance of {@link HalLinkListEntry}
+     * @return The set of xml elements
+     */
     private Set<Element> fromHalLinkListEntry(
             Document document, HalLinkEntry entry) {
 
@@ -66,11 +95,20 @@ public class HalLinksXml {
                 .map(e -> (HalLinkListEntry) e)
                 .map(HalLinkListEntry::getHalLinkList)
                 .map(list -> list.stream()
-                        .map(l -> toElement(document, entry.getRel(), l))
+                        .map(l -> toElement(
+                                document, entry.getRel().getValue(), l))
                         .collect(Collectors.toUnmodifiableSet()))
                 .orElseThrow();
     }
 
+    /**
+     * Transforms hal representation of a link into a xml element.
+     *
+     * @param document The document where element will belong to
+     * @param rel The relation of the link
+     * @param halLink The hal representation of a link
+     * @return The xml element representing the link
+     */
     private Element toElement(
             Document document,
             String rel,
@@ -83,12 +121,17 @@ public class HalLinksXml {
         return linkElement;
     }
 
+    /**
+     * Setts attributes of a hal representation of a link to a xml element.
+     *
+     * @param element The xml element
+     * @param halLink The hal representation of a link
+     */
     public static void setLinkAttributesToElement(
             Element element, HalLink halLink) {
 
-        Optional.ofNullable(halLink.getHref())
-                .ifPresent(h -> element.setAttribute(
-                        HalLink.Fields.href, h));
+        element.setAttribute(HalLink.Fields.href, halLink.getHref());
+
         Optional.ofNullable(halLink.getTemplated())
                 .ifPresent(t -> element.setAttribute(
                         HalLink.Fields.templated, t.toString()));

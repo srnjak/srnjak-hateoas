@@ -1,5 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
+import com.srnjak.hateoas.LinkRelation;
 import lombok.Value;
 
 /**
@@ -16,7 +17,7 @@ public final class HalEmbeddedObjectEntry implements HalEmbeddedEntry {
         /**
          * The relation of the embedded entry.
          */
-        private String rel;
+        private LinkRelation rel;
 
         /**
          * The object of the embedded entry.
@@ -28,7 +29,7 @@ public final class HalEmbeddedObjectEntry implements HalEmbeddedEntry {
          *
          * @param rel The relation of the embedded entry
          */
-        public Builder(String rel) {
+        public Builder(LinkRelation rel) {
             this.rel = rel;
         }
 
@@ -56,14 +57,14 @@ public final class HalEmbeddedObjectEntry implements HalEmbeddedEntry {
     /**
      * @return The builder for this class
      */
-    public static Builder builder(String name) {
-        return new Builder(name);
+    public static Builder builder(LinkRelation rel) {
+        return new Builder(rel);
     }
 
     /**
      * The relation of the embedded entry
      */
-    private final String rel;
+    private final LinkRelation rel;
 
     /**
      * The object of the embedded entry

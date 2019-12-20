@@ -12,7 +12,7 @@ import java.util.*;
  */
 @Data
 @NoArgsConstructor
-public class HypermediaModel {
+public class HypermediaModel<T> {
 
     /**
      * List of links

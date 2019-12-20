@@ -39,7 +39,8 @@ public class CollectionModel<E> extends HypermediaModel {
      * @param entities The collection of entities to be wrapped
      * @param links The links to be added to the model
      */
-    public CollectionModel(Collection<EntityModel<E>> entities, Link... links) {
+    public CollectionModel(
+            Collection<EntityModel<E>> entities, Link... links) {
         super(links);
         this.content.addAll(entities);
     }
@@ -50,7 +51,8 @@ public class CollectionModel<E> extends HypermediaModel {
      * @param entities The collection of entities to be wrapped
      * @param links The collection of links to be added to the model
      */
-    public CollectionModel(Collection<EntityModel<E>> entities, Collection<Link> links) {
+    public CollectionModel(
+            Collection<EntityModel<E>> entities, Collection<Link> links) {
         super(links);
         this.content.addAll(entities);
     }

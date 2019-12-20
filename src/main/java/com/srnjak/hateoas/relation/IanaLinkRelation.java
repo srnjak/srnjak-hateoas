@@ -1,4 +1,7 @@
-package com.srnjak.hateoas;
+package com.srnjak.hateoas.relation;
+
+import com.srnjak.hateoas.LinkRelation;
+import lombok.Getter;
 
 /**
  * Standard IANA-based link relations.
@@ -7,22 +10,8 @@ package com.srnjak.hateoas;
  *     https://www.iana.org/assignments/link-relations/link-relations.xhtml
  *     </a>
  */
-@SuppressWarnings("ALL")
-public class IanaLinkRelation extends LinkRelation {
-
-    /**
-     * IANA relation type.
-     */
-    public static final RelationType RELATION_TYPE = new RelationType() {
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String prefix() {
-            return null;
-        }
-    };
+@Getter
+public class IanaLinkRelation implements LinkRelation {
 
     /**
      * Refers to a resource that is the subject of the link's context.
@@ -732,11 +721,26 @@ public class IanaLinkRelation extends LinkRelation {
             new IanaLinkRelation("working-copy-of");
 
     /**
+     * The relation reference.
+     */
+    private String reference;
+
+    /**
      * Constructor.
      *
-     * @param value the relation value
+     * @param reference The reference of the link relation
      */
-    public IanaLinkRelation(String value) {
-        super(value, RELATION_TYPE);
+    private IanaLinkRelation(String reference) {
+        this.reference = reference;
+    }
+
+    /**
+     * The value of link relation
+     *
+     * @return The value of the link relation
+     */
+    @Override
+    public String getValue() {
+        return this.reference;
     }
 }

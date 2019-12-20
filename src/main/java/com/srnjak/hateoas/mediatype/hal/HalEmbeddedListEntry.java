@@ -1,5 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
+import com.srnjak.hateoas.LinkRelation;
 import lombok.Value;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
         /**
          * The relation of the embedded entry.
          */
-        private String rel;
+        private LinkRelation rel;
 
         /**
          * The list of objects of the embedded entry.
@@ -33,7 +34,7 @@ public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
          *
          * @param rel The relation of the embedded entry
          */
-        public Builder(String rel) {
+        public Builder(LinkRelation rel) {
             this.rel = rel;
         }
 
@@ -73,8 +74,8 @@ public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
     /**
      * @return The builder for this class
      */
-    public static Builder builder(String name) {
-        return new Builder(name);
+    public static Builder builder(LinkRelation rel) {
+        return new Builder(rel);
     }
 
     /**
@@ -85,7 +86,7 @@ public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
      * @return The collector
      */
     public static Collector<HalObject, Builder, HalEmbeddedListEntry> collector(
-            String rel) {
+            LinkRelation rel) {
 
         return Collector.of(
                 () -> HalEmbeddedListEntry.builder(rel),
@@ -119,7 +120,7 @@ public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
     /**
      * The relation of the embedded entry
      */
-    private final String rel;
+    private final LinkRelation rel;
 
     /**
      * The list of objects of the embedded entry
@@ -132,7 +133,8 @@ public final class HalEmbeddedListEntry implements HalEmbeddedEntry {
      * @param rel The relation of the embedded entry
      * @param halObjectList The list of objects in the embedded entry
      */
-    public HalEmbeddedListEntry(String rel, List<HalObject> halObjectList) {
+    public HalEmbeddedListEntry(
+            LinkRelation rel, List<HalObject> halObjectList) {
         this.rel = rel;
         this.halObjectList = Collections.unmodifiableList(halObjectList);
     }

@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
 import com.srnjak.hateoas.mediatype.hal.*;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +33,8 @@ class HalObjectJsonTest {
         entity.setC(true);
 
         HalObject halObject = HalObject.builder(entity)
-                .addLink("self", halLink)
-                .addLinks("coll", halLink)
+                .addLink(IanaLinkRelation.SELF, halLink)
+                .addLinks(IanaLinkRelation.COLLECTION, halLink)
                 .build();
 
         JsonObject links =
@@ -63,12 +64,12 @@ class HalObjectJsonTest {
         entity.setC(true);
 
         HalObject embedded = HalObject.builder(entity)
-                .addLink("x", halLink)
-                .addLinks("y", halLink)
+                .addLink(IanaLinkRelation.SELF, halLink)
+                .addLinks(IanaLinkRelation.ABOUT, halLink)
                 .build();
 
         HalEmbeddedEntry embeddedEntry = HalEmbeddedObjectEntry
-                .builder("emb")
+                .builder(IanaLinkRelation.APPENDIX)
                 .object(embedded)
                 .build();
 
@@ -76,8 +77,8 @@ class HalObjectJsonTest {
                 HalEmbedded.builder().add(embeddedEntry).build();
 
         HalObject halObject = HalObject.builder(entity)
-                .addLink("self", halLink)
-                .addLinks("coll", halLink)
+                .addLink(IanaLinkRelation.SELF, halLink)
+                .addLinks(IanaLinkRelation.COLLECTION, halLink)
                 .addEmbedded(halEmbedded)
                 .build();
 

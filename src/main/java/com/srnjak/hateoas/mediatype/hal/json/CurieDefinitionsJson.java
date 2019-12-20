@@ -1,22 +1,23 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
-import com.srnjak.hateoas.mediatype.hal.HalCuries;
+import com.srnjak.hateoas.relation.CurieDefinition;
 import com.srnjak.hateoas.utils.JsonBuilderUtils;
 import lombok.AllArgsConstructor;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import java.util.Set;
 
 /**
- * A json serializer of a {@link HalCuries} object.
+ * A json serializer of a set of {@link CurieDefinition} objects.
  */
 @AllArgsConstructor
-public class HalCuriesJson {
+public class CurieDefinitionsJson {
 
     /**
      * The hal representation of curies.
      */
-    private HalCuries halCuries;
+    private Set<CurieDefinition> curieDefinitions;
 
     /**
      * Generates json object.
@@ -24,9 +25,9 @@ public class HalCuriesJson {
      * @return The json object
      */
     public JsonArray toJsonArray() {
-        return halCuries.getHalCurieSet().stream()
-                .map(HalCurieJson::new)
-                .map(HalCurieJson::toJsonObject)
+        return curieDefinitions.stream()
+                .map(CurieDefinitionJson::new)
+                .map(CurieDefinitionJson::toJsonObject)
                 .map(Json::createObjectBuilder)
                 .collect(Json::createArrayBuilder,
                         JsonBuilderUtils::add,

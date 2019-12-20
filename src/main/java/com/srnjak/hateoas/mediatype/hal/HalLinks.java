@@ -1,5 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
+import com.srnjak.hateoas.LinkRelation;
 import lombok.Value;
 
 import java.util.Collections;
@@ -25,11 +26,6 @@ public final class HalLinks {
         private Set<HalLinkEntry> entrySet = new HashSet<>();
 
         /**
-         * The curies.
-         */
-        private HalCuries halCuries;
-
-        /**
          * Adds an entry to the set.
          *
          * @param entry The entry
@@ -52,17 +48,6 @@ public final class HalLinks {
         }
 
         /**
-         * Sets curies.
-         *
-         * @param halCuries The curies
-         * @return This builder
-         */
-        public Builder curies(HalCuries halCuries) {
-            this.halCuries = halCuries;
-            return this;
-        }
-
-        /**
          * Builds the {@link HalLinks} instance.
          *
          * @return The built {@link HalLinks} instance.
@@ -71,8 +56,7 @@ public final class HalLinks {
             return Optional.of(this.entrySet)
                     .filter(e -> !e.isEmpty())
                     .map(e -> new HalLinks(
-                            Collections.unmodifiableSet(this.entrySet),
-                            this.halCuries))
+                            Collections.unmodifiableSet(this.entrySet)))
                     .orElse(null);
         }
     }
@@ -88,32 +72,15 @@ public final class HalLinks {
      * Creates a collector for link entries to collect them into
      * an links entry.
      *
-     * @param halCuries The curies included in the links property
-     * @return The collector
-     */
-    public static Collector<HalLinkEntry, Builder, HalLinks> collector(
-            HalCuries halCuries) {
-
-        Builder builder = Optional.ofNullable(halCuries)
-                .filter(c -> !c.getHalCurieSet().isEmpty())
-                .map(c -> HalLinks.builder().curies(c))
-                .orElse(HalLinks.builder());
-
-        return Collector.of(
-                () -> builder,
-                HalLinks::addEntry,
-                HalLinks::addAll,
-                HalLinks.Builder::build);
-    }
-
-    /**
-     * Creates a collector for link entries to collect them into
-     * an links entry.
-     *
      * @return The collector
      */
     public static Collector<HalLinkEntry, Builder, HalLinks> collector() {
-        return collector(null);
+
+        return Collector.of(
+                HalLinks::builder,
+                HalLinks::addEntry,
+                HalLinks::addAll,
+                HalLinks.Builder::build);
     }
 
     /**
@@ -143,11 +110,12 @@ public final class HalLinks {
     private Set<HalLinkEntry> entrySet;
 
     /**
-     * The curies.
+     * Searches for entry with a specific relation.
+     *
+     * @param rel The link relation
+     * @return The link entry
      */
-    private HalCuries curies;
-
-    public Optional<HalLinkEntry> get(String rel) {
+    public Optional<HalLinkEntry> get(LinkRelation rel) {
         return entrySet.stream()
                 .filter(e -> e.getRel().equals(rel))
                 .findAny();

@@ -1,5 +1,6 @@
 package com.srnjak.hateoas.mediatype.hal;
 
+import com.srnjak.hateoas.LinkRelation;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -36,11 +37,6 @@ public class HalObject {
         Set<HalLinkEntry> halLinkEntrySet = new HashSet<>();
 
         /**
-         * The set of curies
-         */
-        Set<HalCurie> halCurieSet = new HashSet<>();
-
-        /**
          * Constructor.
          */
         public Builder() {}
@@ -61,7 +57,9 @@ public class HalObject {
          * @param halLink The link to be added
          * @return This builder
          */
-        public Builder addLink(@NonNull String rel, @NonNull HalLink halLink) {
+        public Builder addLink(
+                @NonNull LinkRelation rel, @NonNull HalLink halLink) {
+
             HalLinkEntry halLinkEntry =
                     HalLinkObjectEntry.builder()
                             .rel(rel)
@@ -92,7 +90,7 @@ public class HalObject {
          * @return This builder
          */
         public HalObject.Builder addLinks(
-                @NonNull String rel,
+                @NonNull LinkRelation rel,
                 @NonNull List<HalLink> halLinks) {
 
             HalLinkEntry halLinkEntry = halLinks.stream()
@@ -109,7 +107,7 @@ public class HalObject {
          * @return This builder
          */
         public Builder addLinks(
-                @NonNull String rel,
+                @NonNull LinkRelation rel,
                 @NonNull HalLink... halLinks) {
 
             this.addLinks(rel, Arrays.asList(halLinks));
@@ -124,33 +122,6 @@ public class HalObject {
          */
         public Builder addLinks(@NonNull List<HalLinkEntry> halLinkEntryList) {
             halLinkEntryList.forEach(this::addLinks);
-            return this;
-        }
-
-        /**
-         * Adds a curie.
-         *
-         * @param halCurie The curie to be added
-         * @return This builder
-         */
-        public Builder addCurie(HalCurie halCurie) {
-            Optional.ofNullable(halCurie)
-                    .ifPresent(c -> this.halCurieSet.add(c));
-            return this;
-        }
-
-        /**
-         * Adds curies.
-         *
-         * @param halCuries The curies to be added
-         * @return This builder
-         */
-        public Builder addCuries(HalCuries halCuries) {
-
-            Optional.ofNullable(halCuries)
-                    .map(HalCuries::getHalCurieSet)
-                    .ifPresent(c -> this.halCurieSet.addAll(c));
-
             return this;
         }
 
@@ -172,11 +143,8 @@ public class HalObject {
          */
         public HalObject build() {
 
-            HalCuries curies = this.halCurieSet.stream()
-                    .collect(HalCuries.collector());
-
             HalLinks halLinks = this.halLinkEntrySet.stream()
-                    .collect(HalLinks.collector(curies));
+                    .collect(HalLinks.collector());
 
             return new HalObject(
                     this.object,

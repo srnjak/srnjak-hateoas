@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal.json;
 
 import com.srnjak.hateoas.mediatype.hal.*;
+import com.srnjak.hateoas.relation.CurieDefinition;
 import com.srnjak.hateoas.utils.JsonBuilderUtils;
 import lombok.AllArgsConstructor;
 
@@ -11,6 +12,7 @@ import javax.json.JsonObjectBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * A json serializer of a {@link HalLinks} object.
@@ -42,7 +44,7 @@ public class HalLinksJson {
                     .map(HalLinkJson::toJsonObject)
                     .get();
 
-            builder.add(objectEntry.getRel(), jsonObject);
+            builder.add(objectEntry.getRel().getValue(), jsonObject);
         });
 
         map.put(HalLinkListEntry.class, () -> {
@@ -55,7 +57,7 @@ public class HalLinksJson {
                     .map(Json::createObjectBuilder)
                     .collect(JsonBuilderUtils.collector());
 
-            builder.add(listEntry.getRel(), jsonArrayBuilder);
+            builder.add(listEntry.getRel().getValue(), jsonArrayBuilder);
         });
 
         map.get(entry.getClass()).run();
@@ -72,6 +74,16 @@ public class HalLinksJson {
      * @return The json object
      */
     public JsonObject toJsonObject() {
+        return toJsonObject(null);
+    }
+
+    /**
+     * Generates json object.
+     *
+     * @param curieDefinitions The set of {@link CurieDefinition} objects
+     * @return The json object
+     */
+    public JsonObject toJsonObject(Set<CurieDefinition> curieDefinitions) {
 
         JsonObjectBuilder jsonObjectBuilder = halLinks.getEntrySet().stream()
                 .collect(
@@ -79,9 +91,10 @@ public class HalLinksJson {
                         HalLinksJson::addEntryToJson,
                         JsonBuilderUtils::add);
 
-        Optional.ofNullable(halLinks.getCuries())
-                .map(HalCuriesJson::new)
-                .map(HalCuriesJson::toJsonArray)
+        Optional.ofNullable(curieDefinitions)
+                .filter(c -> !c.isEmpty())
+                .map(CurieDefinitionsJson::new)
+                .map(CurieDefinitionsJson::toJsonArray)
                 .ifPresent(c -> jsonObjectBuilder.add(CURIES, c));
 
         return jsonObjectBuilder.build();

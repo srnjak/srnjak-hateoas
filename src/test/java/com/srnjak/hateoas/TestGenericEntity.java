@@ -1,4 +1,4 @@
-package com.srnjak.hateoas.mediatype.hal.jaxrs;
+package com.srnjak.hateoas;
 
 import lombok.Data;
 

@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class HalObjectXml {
 
+    public static final String MISSING_SELF_LINK = "Missing SELF link";
     /**
      * The hal representation of an entity object
      */
@@ -81,16 +82,20 @@ public class HalObjectXml {
      * @param rel The relation to the resource
      * @return The resource element
      */
-    public Element toResourceElement(Document doc, LinkRelation rel) {
+    Element toResourceElement(Document doc, LinkRelation rel) {
         Element element = doc.createElement("resource");
 
-        halObject.getHalLinks().get(IanaLinkRelation.SELF)
+        Optional.ofNullable(halObject.getHalLinks())
+                .flatMap(links -> links.get(IanaLinkRelation.SELF))
                 .filter(e -> e instanceof HalLinkObjectEntry)
                 .map(e -> (HalLinkObjectEntry) e)
                 .map(HalLinkObjectEntry::getHalLink)
-                .ifPresent(l -> {
+                .ifPresentOrElse(l -> {
                     element.setAttribute("rel", rel.getValue());
                     HalLinksXml.setLinkAttributesToElement(element, l);
+                },
+                () -> {
+                    throw new IllegalArgumentException(MISSING_SELF_LINK);
                 });
 
         Optional.ofNullable(halObject.getObject())
@@ -104,7 +109,7 @@ public class HalObjectXml {
         Optional.ofNullable(halObject.getHalLinks())
                 .map(HalLinksXml::new)
                 .map(l -> l.toXmlElements(doc))
-                .get()
+                .orElse(new HashSet<>())
                 .forEach(element::appendChild);
 
         // embedded

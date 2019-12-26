@@ -30,6 +30,40 @@ public class HalLinksXml {
     public static final String REL_ATTRIBUTE = "rel";
 
     /**
+     * Setts attributes of a hal representation of a link to a xml element.
+     *
+     * @param element The xml element
+     * @param halLink The hal representation of a link
+     */
+    public static void setLinkAttributesToElement(
+            Element element, HalLink halLink) {
+
+        element.setAttribute(HalLink.Fields.href, halLink.getHref());
+
+        Optional.ofNullable(halLink.getTemplated())
+                .ifPresent(t -> element.setAttribute(
+                        HalLink.Fields.templated, t.toString()));
+        Optional.ofNullable(halLink.getType())
+                .ifPresent(t -> element.setAttribute(
+                        HalLink.Fields.type, t));
+        Optional.ofNullable(halLink.getDeprecation())
+                .ifPresent(d -> element.setAttribute(
+                        HalLink.Fields.deprecation, d));
+        Optional.ofNullable(halLink.getName())
+                .ifPresent(n -> element.setAttribute(
+                        HalLink.Fields.name, n));
+        Optional.ofNullable(halLink.getProfile())
+                .ifPresent(p -> element.setAttribute(
+                        HalLink.Fields.profile, p));
+        Optional.ofNullable(halLink.getTitle())
+                .ifPresent(t -> element.setAttribute(
+                        HalLink.Fields.title, t));
+        Optional.ofNullable(halLink.getHreflang())
+                .ifPresent(h -> element.setAttribute(
+                        HalLink.Fields.hreflang, h));
+    }
+
+    /**
      * The hal representation of a set of links.
      */
     private HalLinks halLinks;
@@ -51,8 +85,7 @@ public class HalLinksXml {
         functionMap.put(HalLinkListEntry.class, this::fromHalLinkListEntry);
 
         return halLinks.getEntrySet().stream()
-                .filter(e -> !e.getRel().equals(
-                        IanaLinkRelation.SELF.getValue()))
+                .filter(e -> !e.getRel().equals(IanaLinkRelation.SELF))
                 .flatMap(e -> functionMap.get(e.getClass())
                         .apply(document, e).stream())
                 .collect(Collectors.toUnmodifiableSet());
@@ -119,39 +152,5 @@ public class HalLinksXml {
 
         setLinkAttributesToElement(linkElement, halLink);
         return linkElement;
-    }
-
-    /**
-     * Setts attributes of a hal representation of a link to a xml element.
-     *
-     * @param element The xml element
-     * @param halLink The hal representation of a link
-     */
-    public static void setLinkAttributesToElement(
-            Element element, HalLink halLink) {
-
-        element.setAttribute(HalLink.Fields.href, halLink.getHref());
-
-        Optional.ofNullable(halLink.getTemplated())
-                .ifPresent(t -> element.setAttribute(
-                        HalLink.Fields.templated, t.toString()));
-        Optional.ofNullable(halLink.getType())
-                .ifPresent(t -> element.setAttribute(
-                        HalLink.Fields.type, t));
-        Optional.ofNullable(halLink.getDeprecation())
-                .ifPresent(d -> element.setAttribute(
-                        HalLink.Fields.deprecation, d));
-        Optional.ofNullable(halLink.getName())
-                .ifPresent(n -> element.setAttribute(
-                        HalLink.Fields.name, n));
-        Optional.ofNullable(halLink.getProfile())
-                .ifPresent(p -> element.setAttribute(
-                        HalLink.Fields.profile, p));
-        Optional.ofNullable(halLink.getTitle())
-                .ifPresent(t -> element.setAttribute(
-                        HalLink.Fields.title, t));
-        Optional.ofNullable(halLink.getHreflang())
-                .ifPresent(h -> element.setAttribute(
-                        HalLink.Fields.hreflang, h));
     }
 }

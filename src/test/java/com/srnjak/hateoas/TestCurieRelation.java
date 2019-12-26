@@ -1,4 +1,4 @@
-package com.srnjak.hateoas.mediatype.hal;
+package com.srnjak.hateoas;
 
 import com.srnjak.hateoas.relation.CurieDefinition;
 import com.srnjak.hateoas.relation.CurieLinkRelation;

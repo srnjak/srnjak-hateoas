@@ -1,10 +1,8 @@
 package com.srnjak.hateoas.mediatype.hal.jaxrs;
 
-import com.srnjak.hateoas.CollectionModel;
-import com.srnjak.hateoas.EntityModel;
-import com.srnjak.hateoas.mediatype.hal.TestCurieRelation;
+import com.srnjak.hateoas.*;
+import com.srnjak.hateoas.TestCurieRelation;
 import com.srnjak.hateoas.relation.IanaLinkRelation;
-import com.srnjak.hateoas.Link;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsCollectionModel;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsEntityModel;
 

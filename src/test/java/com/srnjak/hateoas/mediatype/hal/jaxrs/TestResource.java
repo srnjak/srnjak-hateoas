@@ -1,15 +1,13 @@
 package com.srnjak.hateoas.mediatype.hal.jaxrs;
 
 import com.srnjak.hateoas.*;
-import com.srnjak.hateoas.TestCurieRelation;
-import com.srnjak.hateoas.relation.IanaLinkRelation;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsCollectionModel;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsEntityModel;
+import com.srnjak.hateoas.relation.IanaLinkRelation;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -90,31 +88,6 @@ public class TestResource {
                 .build());
 
         return Response.ok(entityModel).build();
-    }
-
-    @Path("/generic2")
-    @GET
-    @Produces({
-                      MediaType.APPLICATION_JSON,
-                      MediaType.APPLICATION_XML,
-                      HalMediaType.APPLICATION_HAL_JSON,
-                      HalMediaType.APPLICATION_HAL_XML})
-    public Response generic2() {
-
-        TestEntity testEntity = new TestEntity();
-        testEntity.setId(UUID.randomUUID().toString());
-        testEntity.setName("random");
-        testEntity.setAge(15);
-        testEntity.setEnabled(true);
-
-        TestGenericEntity<TestEntity> testGenEntity = new TestGenericEntity<>();
-        testGenEntity.setId(UUID.randomUUID().toString());
-        testGenEntity.setGenericProperty(testEntity);
-
-        GenericEntity<TestGenericEntity<TestEntity>> ge =
-                new GenericEntity<>(testGenEntity) {};
-
-        return Response.ok(ge).build();
     }
 
     @GET

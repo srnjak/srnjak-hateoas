@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-public class HalHypermediaWriterTest extends JerseyTest {
+public class HalHypermediaWriterIT extends JerseyTest {
 
     @Provider
     public static class DebugMapper implements ExceptionMapper<Throwable> {

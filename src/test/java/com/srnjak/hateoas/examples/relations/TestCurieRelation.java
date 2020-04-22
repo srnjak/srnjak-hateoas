@@ -1,4 +1,4 @@
-package com.srnjak.hateoas;
+package com.srnjak.hateoas.examples.relations;
 
 import com.srnjak.hateoas.relation.CurieDefinition;
 import com.srnjak.hateoas.relation.CurieLinkRelation;

@@ -1,0 +1,19 @@
+= Srnjak HATEOAS library
+
+:wikipedia-hateoas: https://en.wikipedia.org/wiki/HATEOAS
+:wikipedia-hal: https://en.wikipedia.org/wiki/HATEOAS
+
+The {wikipedia-hateoas}[HATEOAS] library for JAX-RS services.
+Its goal is to provide response of a REST endpoint in the way that it is formatted with hypermedia support and that it is able to achieve it in a simple way.
+
+For now, it supports only {wikipedia-hal}[HAL] format in both flavors - JSON and XML.
+
+:numbered:
+
+:plantumlconfig: plantuml.cfg
+
+include::_installation.adoc[]
+include::_architecture.adoc[]
+include::_usage.adoc[]
+
+include::examples/_examples.adoc[]

@@ -2,6 +2,7 @@ package com.srnjak.hateoas.mediatype.hal.xml;
 
 import com.srnjak.hateoas.mediatype.hal.*;
 import com.srnjak.hateoas.relation.IanaLinkRelation;
+import com.srnjak.hateoas.test.utils.XmlUtils;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -9,9 +10,6 @@ import org.xmlunit.assertj.XmlAssert;
 import org.xmlunit.diff.DefaultNodeMatcher;
 import org.xmlunit.diff.ElementSelectors;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -1,5 +1,6 @@
-package com.srnjak.hateoas;
+package com.srnjak.hateoas.examples.entities;
 
+import com.srnjak.hateoas.examples.entities.TestEntity;
 import lombok.Data;
 
 import javax.xml.bind.annotation.XmlRootElement;

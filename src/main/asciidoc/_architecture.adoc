@@ -1,0 +1,119 @@
+== Architecture
+=== Abstract layer
+The abstract layer serves as a glue of content to the specific HATEOAS implementation.
+Package containing classes for this level is `com.srnjak.hateoas` and is the top package of this library.
+
+Every class in this layer extends from `HypermediaModel`.
+This class holds a list of links to related media.
+
+For wrapping single entity into hypermedia context, there is `EntityModel` class which holds the entity content.
+For collections of multiple entities, `CollectionModel` class is prepared.
+
+Because type erasure in Java, while working with generics special treatment is required.
+For this purpose `GenericEntityModel` and `GenericCollectionModel` classes exist.
+
+
+[plantuml, hypermedia-model, svg]
+....
+
+skinparam class {
+    BorderColor Black
+LineTickness 123
+}
+
+skinparam LineColor green
+
+class HypermediaModel<T>
+
+class EntityModel<T> {
+    content:T
+}
+
+class CollectionModel<T>
+
+class GenericEntityModel<T> {
+    genericType:Type
+}
+
+class GenericCollectionModel<T> {
+    genericType:Type
+}
+
+class Link #lightgray
+
+HypermediaModel ->"*" Link
+HypermediaModel <|-- EntityModel
+HypermediaModel <|-- CollectionModel
+EntityModel <|-- GenericEntityModel
+CollectionModel <|-- GenericCollectionModel
+
+CollectionModel -left->"*" EntityModel:content
+....
+
+=== Specific layer
+Specific layer implementations exist under package `com.srnjak.hateoas.mediatype`.
+Each implementation is responsible for conversion from abstract layer object into concrete mediatype.
+Currently there is support for hal mediatype only.
+
+=== Extensions
+It is possible to extend abstract layer classes with the ones suitable for specific cases and improve reusability.
+
+For each specific extension class we have to implement a provider of `javax.ws.rs.ext.MessageBodyWriter` type, which will be responsible for conversion to the specific mediatype.
+Read more about `MessageBodyWriter` in JAX-RS specification.
+
+==== Example of provider implementation for HAL mediatype
+[source,java]
+----
+@Provider
+@Produces({HalMediaType.APPLICATION_HAL_JSON, HalMediaType.APPLICATION_HAL_XML})
+public class HalMyModelWriter implements MessageBodyWriter<MyModel> {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isWriteable(
+            Class<?> aClass,
+            Type type,
+            Annotation[] annotations,
+            MediaType mediaType) {
+
+        return MyModel.class.isAssignableFrom(aClass);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void writeTo(
+            MyModel myModel,
+            Class<?> aClass,
+            Type type,
+            Annotation[] annotations,
+            MediaType mediaType,
+            MultivaluedMap<String, Object> multivaluedMap,
+            OutputStream outputStream)
+            throws IOException, WebApplicationException {
+
+        Map<MediaType, Function<EntityModel<?>, String>> functionMap =
+                new HashMap<>();
+        functionMap.put(HalMediaType.APPLICATION_HAL_JSON_TYPE, this::getJson);
+        functionMap.put(HalMediaType.APPLICATION_HAL_XML_TYPE, this::getXml);
+
+        byte[] bytes = Optional.of(myModel)
+                .map(functionMap.get(mediaType))
+                .map(s -> s.getBytes(StandardCharsets.UTF_8))
+                .get();
+
+        outputStream.write(bytes);
+    }
+
+    private String getJson(EntityModel<?> entityModel) {
+        // convert to json
+    }
+
+    private String getXml(EntityModel<?> entityModel) {
+        // convert to xml
+    }
+}
+----

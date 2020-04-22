@@ -1,8 +1,9 @@
 package com.srnjak.hateoas.mediatype.hal.xml;
 
-import com.srnjak.hateoas.TestEntity;
+import com.srnjak.hateoas.examples.entities.TestEntity;
 import com.srnjak.hateoas.mediatype.hal.*;
 import com.srnjak.hateoas.relation.IanaLinkRelation;
+import com.srnjak.hateoas.test.utils.XmlUtils;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

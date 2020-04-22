@@ -1,4 +1,4 @@
-package com.srnjak.hateoas;
+package com.srnjak.hateoas.examples.entities;
 
 import lombok.Data;
 

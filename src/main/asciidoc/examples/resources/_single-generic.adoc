@@ -1,0 +1,53 @@
+=== Retrieve a single generic entity
+
+:sourcedir-root: ../../../../..
+:testdir: {sourcedir-root}/src/test/java
+:examples: {testdir}/com/srnjak/hateoas/examples
+:snippets: {sourcedir-root}/target/snippets
+
+Single generic entity endpoint:
+[source,java,linenums,options="nowrap"]
+[subs="verbatim,attributes"]
+----
+include::{examples}/resources/TestResource.java[tags=single-generic,indent=0]
+----
+<1> List the supported media types which endpoint is able to produce.
+<2> Wrap object into EntityModel (which is subclass of HypermediaModel).
+<3> Add some links to the model.
+<4> Set the wrapping model as entity to the response.
+
+==== Output
+
+Output of endpoint is produced regarding of the `Accept` header content.
+
+===== application/json
+
+[source,json,linenums,options="nowrap"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/output/json/single-generic.json[]
+----
+
+===== application/xml
+
+[source,xml,linenums,options="nowrap"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/output/xml/single-generic.xml[]
+----
+
+===== application/hal+json
+
+[source,json,linenums,options="nowrap"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/output/hal-json/single-generic.json[]
+----
+
+===== application/hal+xml
+
+[source,xml,linenums,options="nowrap"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/output/hal-xml/single-generic.xml[]
+----

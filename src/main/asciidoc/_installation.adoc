@@ -1,0 +1,19 @@
+== Installation
+
+=== Maven central
+Release of this library is available in Maven central.
+
+[source,xml]
+----
+<dependency>
+    <groupId>com.srnjak</groupId>
+    <artifactId>srnjak-hateoas</artifactId>
+    <version>1.0.0</version>
+</dependency>
+----
+
+=== Build from source
+It is easy to build from source using Maven.
+----
+mvn clean install
+----

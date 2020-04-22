@@ -1,6 +1,7 @@
 package com.srnjak.hateoas.mediatype.hal;
 
 import com.srnjak.hateoas.*;
+import com.srnjak.hateoas.examples.relations.TestCurieRelation;
 import com.srnjak.hateoas.relation.IanaLinkRelation;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;

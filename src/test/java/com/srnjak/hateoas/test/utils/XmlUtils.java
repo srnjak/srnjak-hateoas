@@ -1,16 +1,15 @@
-package com.srnjak.hateoas.mediatype.hal.xml;
+package com.srnjak.hateoas.test.utils;
 
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 public class XmlUtils {
@@ -44,5 +43,32 @@ public class XmlUtils {
             throw new RuntimeException(e);
         }
         return db.newDocument();
+    }
+
+    public static String prettify(String xmlData) {
+        TransformerFactory transformerFactory =
+                TransformerFactory.newInstance();
+        transformerFactory.setAttribute("indent-number", 2);
+
+        Transformer transformer = null;
+        try {
+            transformer = transformerFactory.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+        StringWriter stringWriter = new StringWriter();
+        StreamResult xmlOutput = new StreamResult(stringWriter);
+
+        Source xmlInput = new StreamSource(new StringReader(xmlData));
+        try {
+            transformer.transform(xmlInput, xmlOutput);
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        }
+
+        return xmlOutput.getWriter().toString();
     }
 }

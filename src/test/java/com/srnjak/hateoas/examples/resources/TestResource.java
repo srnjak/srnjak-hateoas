@@ -1,8 +1,12 @@
-package com.srnjak.hateoas.mediatype.hal.jaxrs;
+package com.srnjak.hateoas.examples.resources;
 
 import com.srnjak.hateoas.*;
+import com.srnjak.hateoas.examples.entities.TestEntity;
+import com.srnjak.hateoas.examples.entities.TestGenericEntity;
+import com.srnjak.hateoas.examples.relations.TestCurieRelation;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsCollectionModel;
 import com.srnjak.hateoas.jaxrs.model.GenericJaxrsEntityModel;
+import com.srnjak.hateoas.mediatype.hal.jaxrs.HalMediaType;
 import com.srnjak.hateoas.relation.IanaLinkRelation;
 
 import javax.ws.rs.GET;
@@ -19,9 +23,10 @@ import java.util.stream.Collectors;
 @Path("/test")
 public class TestResource {
 
+    // tag::single[]
     @Path("/single")
     @GET
-    @Produces({
+    @Produces({ // <1>
             MediaType.APPLICATION_JSON,
             MediaType.APPLICATION_XML,
             HalMediaType.APPLICATION_HAL_JSON,
@@ -34,8 +39,9 @@ public class TestResource {
         testEntity.setAge(15);
         testEntity.setEnabled(true);
 
-        EntityModel<TestEntity> entityModel = new EntityModel<>(testEntity);
-        entityModel.addLink(Link.builder()
+        EntityModel<TestEntity> entityModel =
+                new EntityModel<>(testEntity); // <2>
+        entityModel.addLink(Link.builder() // <3>
                 .relation(IanaLinkRelation.SELF)
                 .href("http://www.example.com/")
                 .build());
@@ -48,12 +54,14 @@ public class TestResource {
                 .href("http://www.example.com/next")
                 .build());
 
-        return Response.ok(entityModel).build();
+        return Response.ok(entityModel).build(); // <4>
     }
+    // end::single[]
 
+    // tag::single-generic[]
     @Path("/generic")
     @GET
-    @Produces({
+    @Produces({ // <1>
               MediaType.APPLICATION_JSON,
               MediaType.APPLICATION_XML,
               HalMediaType.APPLICATION_HAL_JSON,
@@ -66,15 +74,16 @@ public class TestResource {
         testEntity.setAge(15);
         testEntity.setEnabled(true);
 
-        TestGenericEntity<TestEntity> testGenEntity = new TestGenericEntity<>();
+        TestGenericEntity<TestEntity> testGenEntity =
+                new TestGenericEntity<>();
         testGenEntity.setId(UUID.randomUUID().toString());
         testGenEntity.setGenericProperty(testEntity);
 
         EntityModel<TestGenericEntity<TestEntity>> entityModel =
                 new GenericJaxrsEntityModel<>(
-                        testGenEntity, new GenericType<>(){});
+                        testGenEntity, new GenericType<>(){}); // <2>
 
-        entityModel.addLink(Link.builder()
+        entityModel.addLink(Link.builder() // <3>
                 .relation(IanaLinkRelation.SELF)
                 .href("http://www.example.com/")
                 .build());
@@ -87,11 +96,14 @@ public class TestResource {
                 .href("http://www.example.com/next")
                 .build());
 
-        return Response.ok(entityModel).build();
+        return Response.ok(entityModel).build(); // <4>
     }
+    // end::single-generic[]
 
+    // tag::collection[]
+    @Path("/collection")
     @GET
-    @Produces({
+    @Produces({ // <1>
               MediaType.APPLICATION_JSON,
               MediaType.APPLICATION_XML,
               HalMediaType.APPLICATION_HAL_JSON,
@@ -120,7 +132,7 @@ public class TestResource {
         entityList.add(e2);
         entityList.add(e3);
 
-        List<EntityModel<TestEntity>> emList = entityList.stream()
+        List<EntityModel<TestEntity>> emList = entityList.stream() // <2>
                 .map(e -> {
                     EntityModel<TestEntity> entityModel = new EntityModel<>(e);
                     entityModel.addLink(Link.builder()
@@ -146,9 +158,9 @@ public class TestResource {
 
         CollectionModel<TestEntity> collectionModel =
                 new GenericJaxrsCollectionModel<>(
-                        emList, new GenericType<>(){});
+                        emList, new GenericType<>(){}); // <3>
 
-        collectionModel.addLink(
+        collectionModel.addLink( // <4>
                 Link.builder()
                         .relation(IanaLinkRelation.SELF)
                         .href("http://www.example.com/")
@@ -159,6 +171,7 @@ public class TestResource {
                         .href("http://www.example.com/")
                         .build());
 
-        return Response.ok(collectionModel).build();
+        return Response.ok(collectionModel).build(); // <5>
     }
+    // end::collection[]
 }

@@ -1,0 +1,26 @@
+== Output for mediatype application/xml
+
+:sourcedir-root: ../../../../..
+:testdir: {sourcedir-root}/src/test/java
+:snippets: {sourcedir-root}/target/snippets/output/xml
+
+Single:
+[source,xml,linenums,options="nowrap,prettify"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/single.xml[]
+----
+
+Generic single:
+[source,xml,linenums,options="nowrap,prettify"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/single-generic.xml[]
+----
+
+Collection:
+[source,xml,linenums,options="nowrap,prettify"]
+[subs="verbatim,attributes"]
+----
+include::{snippets}/collection.xml[]
+----

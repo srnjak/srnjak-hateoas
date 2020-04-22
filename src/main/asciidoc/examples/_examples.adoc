@@ -1,0 +1,5 @@
+== Examples
+
+include::resources/_single.adoc[]
+include::resources/_single-generic.adoc[]
+include::resources/_collection.adoc[]

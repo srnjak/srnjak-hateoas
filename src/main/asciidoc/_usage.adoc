@@ -1,0 +1,4 @@
+== Usage
+. We have to do is to add this library to the classpath.
+. After that we should build one of abstract layer classes in JAX-RS endpoints.
+. We also have to specify, which one of supported mediatypes, our endpoint is able to produce.

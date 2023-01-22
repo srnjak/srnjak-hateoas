@@ -2,7 +2,7 @@ package com.srnjak.hateoas.mediatype.hal.jaxrs;
 
 import lombok.experimental.UtilityClass;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * HAL media types

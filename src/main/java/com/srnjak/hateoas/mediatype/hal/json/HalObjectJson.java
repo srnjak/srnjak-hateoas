@@ -5,10 +5,10 @@ import com.srnjak.hateoas.relation.CurieDefinition;
 import com.srnjak.hateoas.utils.GenericEntityWrapper;
 import lombok.AllArgsConstructor;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.bind.JsonbBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
+import jakarta.json.bind.JsonbBuilder;
 import java.io.StringReader;
 import java.util.Optional;
 import java.util.Set;

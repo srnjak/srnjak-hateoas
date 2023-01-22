@@ -3,10 +3,9 @@ package com.srnjak.hateoas.mediatype.hal.json;
 import com.srnjak.hateoas.relation.CurieDefinition;
 import lombok.AllArgsConstructor;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import java.util.Optional;
+import jakarta.json.Json;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 
 /**
  * A json serializer of a {@link CurieDefinition} object.

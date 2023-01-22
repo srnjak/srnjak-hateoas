@@ -3,8 +3,8 @@ package com.srnjak.hateoas.jaxrs;
 import com.srnjak.hateoas.mediatype.hal.jaxrs.HalMediaType;
 import lombok.experimental.UtilityClass;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Variant;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Variant;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,7 +1,7 @@
 package com.srnjak.hateoas.test.utils;
 
-import javax.json.*;
-import javax.json.stream.JsonGenerator;
+import jakarta.json.*;
+import jakarta.json.stream.JsonGenerator;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;

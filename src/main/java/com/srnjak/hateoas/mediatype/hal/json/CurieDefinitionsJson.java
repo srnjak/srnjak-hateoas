@@ -4,8 +4,8 @@ import com.srnjak.hateoas.relation.CurieDefinition;
 import com.srnjak.hateoas.utils.JsonBuilderUtils;
 import lombok.AllArgsConstructor;
 
-import javax.json.Json;
-import javax.json.JsonArray;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
 import java.util.Set;
 
 /**

@@ -3,9 +3,9 @@ package com.srnjak.hateoas.mediatype.hal.json;
 import com.srnjak.hateoas.relation.CurieDefinition;
 import org.junit.jupiter.api.Test;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 import java.util.HashSet;
 import java.util.Set;
 

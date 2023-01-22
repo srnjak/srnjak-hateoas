@@ -2,12 +2,12 @@ package com.srnjak.hateoas.jaxrs;
 
 import com.srnjak.hateoas.*;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.Variant;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerResponseContext;
+import jakarta.ws.rs.container.ContainerResponseFilter;
+import jakarta.ws.rs.core.GenericEntity;
+import jakarta.ws.rs.core.Variant;
+import jakarta.ws.rs.ext.Provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

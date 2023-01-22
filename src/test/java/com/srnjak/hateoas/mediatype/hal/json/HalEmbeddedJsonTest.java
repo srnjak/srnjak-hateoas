@@ -5,9 +5,9 @@ import com.srnjak.hateoas.relation.IanaLinkRelation;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
 
 import static com.srnjak.testing.json.AssertJson.assertContainsProperty;
 import static org.junit.jupiter.api.Assertions.*;

@@ -4,10 +4,10 @@ import com.srnjak.hateoas.mediatype.hal.*;
 import com.srnjak.hateoas.utils.JsonBuilderUtils;
 import lombok.AllArgsConstructor;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonArray;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

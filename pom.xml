@@ -6,7 +6,7 @@
 
     <groupId>com.srnjak</groupId>
     <artifactId>srnjak-hateoas</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
 
     <name>srnjak-testing-json</name>
     <description>Utility for decorating JAX-RS responses with HATEOAS data.</description>

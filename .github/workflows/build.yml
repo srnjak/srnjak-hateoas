@@ -1,0 +1,68 @@
+name: Build and Deploy Snapshot
+
+on:
+  push:
+    branches:
+      # '*' does not match a '/', so dependabot branches would never be built.
+      - '**'  # All branches, including those with a slash
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container:
+      image: srnjak/ci-builder-maven:3.9.6-jdk21-9
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: /root/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn -B package -s mvn-settings.xml
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-jars
+          path: target/*.jar
+
+  deploy-snapshot:
+    needs: build
+    name: Deploy Snapshot
+    runs-on: ubuntu-latest
+    # master is the only long-lived branch here and it always carries a
+    # -SNAPSHOT version, except for the single '[release] ' commit that the
+    # release workflow pushes while cutting a release. Skipping those commits
+    # keeps this job from pushing a release version to the snapshot endpoint.
+    if: github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, '[release] ')
+    container:
+      image: srnjak/ci-builder-maven:3.9.6-jdk21-9
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: /root/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Set up environment variables
+        run: |
+          echo 'CENTRAL_USERNAME_PARAM=${{ vars.CENTRAL_USERNAME_PARAM }}' >> $GITHUB_ENV
+          echo 'CENTRAL_PASSWORD_PARAM=${{ secrets.CENTRAL_PASSWORD_PARAM }}' >> $GITHUB_ENV
+
+      - name: Deploy with Maven
+        run: |
+          echo ${{ secrets.GPG_PRIVATE_KEY }} | base64 --decode | gpg --batch --import
+          mvn -B deploy -s mvn-settings.xml -DskipTests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"

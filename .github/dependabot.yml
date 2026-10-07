@@ -1,0 +1,11 @@
+version: 2
+
+updates:
+  # Version updates open against develop, the branch features are merged
+  # into. Security updates ignore target-branch and always go to the
+  # default branch, master; that cannot be redirected.
+  - package-ecosystem: maven
+    directory: "/"
+    target-branch: develop
+    schedule:
+      interval: weekly

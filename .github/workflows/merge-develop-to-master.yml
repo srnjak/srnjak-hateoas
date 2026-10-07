@@ -1,0 +1,29 @@
+name: Merge Develop to Master
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_merge:
+        description: 'Type "CONFIRM" to merge develop into master'
+        required: true
+
+jobs:
+  merge:
+    name: Merge Develop to Master
+    if: ${{ github.event.inputs.confirm_merge == 'CONFIRM' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0  # Ensures full history is checked out
+      - name: Setup Git Config
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Merge develop to master
+        run: |
+          git fetch origin master
+          git checkout master
+          git merge --no-ff develop -m "Manual merge of develop into master"
+          git push origin master

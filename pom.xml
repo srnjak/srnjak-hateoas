@@ -58,6 +58,7 @@
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>4.0.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
@@ -74,6 +75,7 @@
             <!-- 1.18.22 cannot run its annotation processor on JDK 21, which
                  is what the CI builder image provides. -->
             <version>1.18.42</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->

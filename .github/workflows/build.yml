@@ -1,0 +1,136 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      # '*' does not match a '/', so feature branches were never built.
+      - '**'  # All branches, including those with a slash
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Merge Develop to Master"]
+    types:
+      - completed
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    container:
+      image: srnjak/ci-builder-maven:3.9.6-jdk21-9
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: /root/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build with Maven
+        run: mvn -B package -s mvn-settings.xml
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packaged-jars
+          path: target/*.jar
+
+  deploy-snapshot:
+    needs: build
+    name: Deploy Snapshot
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    container:
+      image: srnjak/ci-builder-maven:3.9.6-jdk21-9
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          echo 'CENTRAL_USERNAME_PARAM=${{ vars.CENTRAL_USERNAME_PARAM }}' >> $GITHUB_ENV
+          echo 'CENTRAL_PASSWORD_PARAM=${{ secrets.CENTRAL_PASSWORD_PARAM }}' >> $GITHUB_ENV
+
+      - name: Deploy with Maven
+        run: |
+          echo ${{ secrets.GPG_PRIVATE_KEY }} | base64 --decode | gpg --batch --import
+          mvn -B deploy -s mvn-settings.xml -DskipTests -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
+
+  release:
+    needs: build
+    name: Release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && !startsWith(github.event.head_commit.message, '[release] ')
+    container:
+      image: srnjak/ci-builder-maven:3.9.6-jdk21-9
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensures full history for tagging
+
+      - name: Set up environment variables
+        run: |
+          echo 'CENTRAL_USERNAME_PARAM=${{ vars.CENTRAL_USERNAME_PARAM }}' >> $GITHUB_ENV
+          echo 'CENTRAL_PASSWORD_PARAM=${{ secrets.CENTRAL_PASSWORD_PARAM }}' >> $GITHUB_ENV
+
+      - name: Configure Git
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+          git remote set-url origin https://github.com/${{ github.repository }}.git
+
+      - name: Import GPG Key
+        run: |
+          echo ${{ secrets.GPG_PRIVATE_KEY }} | base64 --decode | gpg --batch --import
+
+      - name: Prepare Release Version
+        run: |
+          mvn -B versions:set -s mvn-settings.xml -DremoveSnapshot=true
+          mvn -B scm:checkin -s mvn-settings.xml -Dmessage="[release] Release version prepared."
+
+      - name: Publish to Maven Central
+        run: |
+          mvn -B clean scm:tag deploy -s mvn-settings.xml -P central -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}"
+
+      - name: Prepare Next Snapshot Version
+        run: |
+          mvn versions:set -s mvn-settings.xml -DnextSnapshot=true
+          mvn -B scm:checkin -s mvn-settings.xml -Dmessage="[release] New snapshot version prepared."
+
+  merge-to-develop:
+    needs: release
+    name: Merge master into develop
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    container:
+      image: srnjak/ci-builder-maven:3.9.6-jdk21-9
+    steps:
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0  # Fetches all history for all branches and tags
+
+      - name: Configure Git
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "git@github.com:"
+          git remote set-url origin https://github.com/${{ github.repository }}.git
+
+      - name: Fetch master branch
+        run: git fetch origin master:master
+
+      - name: Merge master into develop
+        run: |
+          git checkout develop
+          git merge master --no-ff
+          git push origin develop

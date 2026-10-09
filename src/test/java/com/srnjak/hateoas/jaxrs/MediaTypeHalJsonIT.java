@@ -10,7 +10,7 @@ import com.srnjak.hateoas.test.utils.JsonUtils;
 import com.srnjak.hateoas.test.utils.jaxrs.DebugMapper;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
